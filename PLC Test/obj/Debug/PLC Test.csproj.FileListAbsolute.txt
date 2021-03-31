@@ -1,0 +1,16 @@
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\PLC Test.exe.config
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\PLC Test.exe
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\PLC Test.pdb
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC Test.csprojAssemblyReference.cache
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC_Test.Form1.resources
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC_Test.Properties.Resources.resources
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC Test.csproj.GenerateResource.cache
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC Test.csproj.CoreCompileInputs.cache
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC Test.exe
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC Test.pdb
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\ICSharpCode.SharpZipLib.dll
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.dll
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OOXML.dll
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OpenXml4Net.dll
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OpenXmlFormats.dll
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC Test.csproj.CopyComplete

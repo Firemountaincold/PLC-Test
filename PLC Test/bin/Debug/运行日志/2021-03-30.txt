@@ -1,0 +1,3 @@
+[测试]2021/3/30 9:57:03 已加载测试流程：C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\测试流程\test.xlsx
+[测试]2021/3/30 9:57:08 已加载配置文件：C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\设备配置\1.xml
+[测试]2021/3/30 9:57:15 已保存配置文件：C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\设备配置\test.xml
