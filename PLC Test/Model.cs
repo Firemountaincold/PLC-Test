@@ -25,17 +25,27 @@ namespace PLC_Test
             get;
             set;
         }
-        public string function
+        public string memtype
         {
             get;
             set;
         }
-        public int funcadd
+        public int memadd
         {
             get;
             set;
         }
-        public int funcvalue
+        public string valuetype
+        {
+            get;
+            set;
+        }
+        public byte[] value
+        {
+            get;
+            set;
+        }
+        public string testtype
         {
             get;
             set;
@@ -44,14 +54,16 @@ namespace PLC_Test
         {
 
         }
-        public TestModel(int settime,int PLCindex,int objectindex,string function,int funcadd,int funcvalue)
+        public TestModel(int settime, int PLCindex, int objectindex, string memtype, int memadd, string valuetype, byte[] value, string testtype)
         {
             this.settime = settime;
             this.PLCindex = PLCindex;
             this.objectindex = objectindex;
-            this.function = function;
-            this.funcadd = funcadd;
-            this.funcvalue = funcvalue;
+            this.memtype = memtype;
+            this.memadd = memadd;
+            this.valuetype = valuetype;
+            this.value = value;
+            this.testtype = testtype;
         }
     }
 
@@ -92,15 +104,52 @@ namespace PLC_Test
         }
     }
 
+    public class ObjectModel
+    {
+        static public int obji;
+        public int objectid
+        {
+            get;
+            set;
+        }
+        public string objectip
+        {
+            get;
+            set;
+        }
+        public string objectport
+        {
+            get;
+            set;
+        }
+        public string objecttype
+        {
+            get;
+            set;
+        }
+        public ObjectModel()
+        {
+
+        }
+        public ObjectModel(int objectid,string objectip,string objectport,string objecttype)
+        {
+            this.objectid = objectid;
+            this.objectip = objectip;
+            this.objectport = objectport;
+            this.objecttype = objecttype;
+        }
+    }
     public class ThreadClass
     {
         public TestModel[] tms;
         public PLCModel[] pms;
+        public ObjectModel[] oms;
         public int epoch;
-        public ThreadClass(TestModel[] tms, PLCModel[] pms, int epoch)
+        public ThreadClass(TestModel[] tms, PLCModel[] pms, ObjectModel[] oms, int epoch)
         {
             this.tms = tms;
             this.pms = pms;
+            this.oms = oms;
             this.epoch = epoch;
         }
     }

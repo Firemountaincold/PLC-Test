@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <Object>
+    <objectid>1</objectid>
+    <objectip>127.0.0.1</objectip>
+    <objectport>502</objectport>
+    <objecttype>AAA</objecttype>
+  </Object>
+</DocumentElement>

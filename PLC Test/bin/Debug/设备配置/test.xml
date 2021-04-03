@@ -6,10 +6,4 @@
     <PLCip>127.0.0.1</PLCip>
     <PLCport>502</PLCport>
   </PLC>
-  <PLC>
-    <PLCid>2</PLCid>
-    <PLCname>AAA</PLCname>
-    <PLCip>192.168.0.1</PLCip>
-    <PLCport>21</PLCport>
-  </PLC>
 </DocumentElement>
