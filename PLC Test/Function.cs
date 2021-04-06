@@ -81,6 +81,64 @@ namespace PLC_Test
             return table;
         }
 
+        public static void SaveDataTableinExcel(DataTable dt, string filePath)
+        {
+            try
+            {
+                using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate,
+                    FileAccess.Write, FileShare.ReadWrite))
+                {
+                    var workBook = new XSSFWorkbook();
+                    var sheet = workBook.CreateSheet("测试结果");
+
+                    //设置成功和失败的单元格样式
+                    XSSFCellStyle pass = (XSSFCellStyle)workBook.CreateCellStyle();
+                    pass.FillPattern = FillPattern.SolidForeground;
+                    byte[] rgbg = { 100, 255, 100 };
+                    XSSFColor green = new XSSFColor(rgbg);
+                    pass.FillForegroundXSSFColor = green;
+
+                    XSSFCellStyle unpass = (XSSFCellStyle)workBook.CreateCellStyle();
+                    unpass.FillPattern = FillPattern.SolidForeground;
+                    byte[] rgbr = { 255, 100, 100 };
+                    XSSFColor red = new XSSFColor(rgbr);
+                    unpass.FillForegroundXSSFColor = red;
+
+                    IRow headRow = sheet.CreateRow(0);
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        ICell cell = headRow.CreateCell(i);
+                        cell.SetCellValue(dt.Columns[i] == null ? "" : dt.Columns[i].ToString());
+                    }
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            IRow newRow = sheet.CreateRow(i + 1);
+                            for (int j = 0; j < dt.Columns.Count; j++)
+                            {
+                                ICell cell = newRow.CreateCell(j);
+                                cell.SetCellValue(dt.Rows[i][j] == null ? "" : dt.Rows[i][j].ToString());
+                                if (dt.Rows[i][j].ToString() == "成功")
+                                {
+                                    cell.CellStyle = pass;
+                                }
+                                else if (dt.Rows[i][j].ToString() == "失败")
+                                {
+                                    cell.CellStyle = unpass;
+                                }
+                            }
+                        }
+                    }
+                    workBook.Write(fileStream);
+                    workBook.Clear();
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         public static PLCModel GetPLCModel(PLCModel[] pms, TestModel tm)
         {
             //返回相应编号的PLC

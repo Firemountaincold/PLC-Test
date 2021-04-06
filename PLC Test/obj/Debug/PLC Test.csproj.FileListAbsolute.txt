@@ -14,3 +14,10 @@ C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OOXML.dll
 C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OpenXml4Net.dll
 C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OpenXmlFormats.dll
 C:\Users\lenovo\source\repos\PLC Test\PLC Test\obj\Debug\PLC Test.csproj.CopyComplete
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\BouncyCastle.Crypto.xml
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\ICSharpCode.SharpZipLib.pdb
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\ICSharpCode.SharpZipLib.xml
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.xml
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OOXML.xml
+C:\Users\lenovo\source\repos\PLC Test\PLC Test\bin\Debug\NPOI.OpenXml4Net.xml

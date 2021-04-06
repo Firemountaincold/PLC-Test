@@ -33,6 +33,8 @@ namespace PLC_Test
         public int timer = 0;
         public int pass = 0;
         public int nopass = 0;
+        public int columnindex = 0;
+        public DataTable result = new DataTable();
         //默认配置
         string defualtPLC = ConfigurationManager.AppSettings["DefaultPLC"];
         string defualtObject = ConfigurationManager.AppSettings["DefaultObject"];
@@ -70,6 +72,9 @@ namespace PLC_Test
                 bindingTest.DataSource = dtexcel;
                 bindingTest.ResetBindings(false);
                 AddInfo("已加载默认测试流程。", 1);
+                result.Clear();
+                result = dtexcel;
+                columnindex = dtexcel.Columns.Count;
 
                 string xmlstr = File.ReadAllText(plcpath);
                 bindingPLC.DataSource = null;
@@ -259,6 +264,9 @@ namespace PLC_Test
                     bindingTest.DataSource = dtexcel;
                     bindingTest.ResetBindings(false);
                     AddInfo("已加载测试流程：" + path, 1);
+                    result.Clear();
+                    result = dtexcel;
+                    columnindex = dtexcel.Columns.Count;
                 }
             }
             catch (Exception ex)
@@ -609,6 +617,7 @@ namespace PLC_Test
             int num = 0;
             pass = 0;
             nopass = 0;
+            result = GetResultDataTable(result, (tc as ThreadClass).epoch);
             foreach (TestModel tm in (tc as ThreadClass).tms)
             { 
 
@@ -634,7 +643,15 @@ namespace PLC_Test
             AddInfo("共进行" + num.ToString() + "项测试，每项测试" + textBoxepoch.Text + "次，共测试" +
                 (num * Convert.ToInt32(textBoxepoch.Text)).ToString() + "次。\r\n其中有" + pass.ToString() + "次测试通过，有" +
                 nopass.ToString() + "次测试未能通过。", 1);
+            SaveResult(result, "test");
+            //结束
+            isConnectTCP = false;
+            testThread.Abort();
+            tcpClient.Disconnect();
+            this.Invoke(new Action(() => { timerTest.Stop(); }));
+            timer = 0;
         }
+
         public void CircleTest(object tc)
         {
             Thread.Sleep(500);
@@ -643,6 +660,7 @@ namespace PLC_Test
             int num = 0;
             pass = 0;
             nopass = 0;
+            result = GetResultDataTable(result, (tc as ThreadClass).epoch);
             foreach (TestModel tm in (tc as ThreadClass).tms)
             {
                 //读取每一个测试的数据
@@ -681,6 +699,13 @@ namespace PLC_Test
             AddInfo("共进行" + num.ToString() + "项测试，每项测试" + textBoxepoch.Text + "次，共测试" + 
                 (num * Convert.ToInt32(textBoxepoch.Text)).ToString() + "次。\r\n其中有" + pass.ToString() + "次测试通过，有" +
                 nopass.ToString() + "次测试未能通过。", 1);
+            SaveResult(result, "test");
+            //结束
+            isConnectTCP = false;
+            testThread.Abort();
+            tcpClient.Disconnect();
+            this.Invoke(new Action(() => { timerTest.Stop(); }));
+            timer = 0;
         }
 
         private void timerTest_Tick(object sender, EventArgs e)
@@ -811,7 +836,7 @@ namespace PLC_Test
                         AddInfo("接受数据失败。", 2);
                     }
 
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value.ToString() + 
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value.ToString() + 
                         " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
                     if (value == returnvalue)
                     {
@@ -832,21 +857,21 @@ namespace PLC_Test
                     if (tm.valuetype == "整数")
                     {
 
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value.ToString() +
                             " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
                     }
                     else if (tm.valuetype == "1位定点小数")
                     {
                         float returnvalue2 = (float)returnvalue / 10;
                         float value2 = (float)value / 10;
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value2.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value2.ToString() +
                             " 。读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
                     }
                     else if (tm.valuetype == "2位定点小数")
                     {
                         float returnvalue2 = (float)returnvalue / 100;
                         float value2 = (float)value / 100;
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value2.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value2.ToString() +
                             " 。读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
                     }
                     if (value == returnvalue)
@@ -865,7 +890,7 @@ namespace PLC_Test
                     {
                         AddInfo("接受数据失败。", 2);
                     }
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value.ToString() +
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value.ToString() +
                            " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
                     if (value == returnvalue)
                     {
@@ -876,11 +901,13 @@ namespace PLC_Test
             if (isPassTest)
             {
                 AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                result.Rows[num - 1].SetField(columnindex + i, "成功");
                 pass++;
             }
             else
             {
                 AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                result.Rows[num - 1].SetField(columnindex + i, "失败");
                 nopass++;
             }
             try
@@ -929,11 +956,13 @@ namespace PLC_Test
                 if (value == returnvalue)
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    result.Rows[num - 1].SetField(columnindex + i, "成功");
                     pass++;
                 }
                 else
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    result.Rows[num - 1].SetField(columnindex + i, "失败");
                     nopass++;
                 }
             }
@@ -975,11 +1004,13 @@ namespace PLC_Test
                 if (value == returnvalue)
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    result.Rows[num - 1].SetField(columnindex + i, "成功");
                     pass++;
                 }
                 else
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    result.Rows[num - 1].SetField(columnindex + i, "失败");
                     nopass++;
                 }
             }
@@ -1003,11 +1034,13 @@ namespace PLC_Test
                 if (value == returnvalue)
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    result.Rows[num - 1].SetField(columnindex + i, "成功");
                     pass++;
                 }
                 else
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    result.Rows[num - 1].SetField(columnindex + i, "失败");
                     nopass++;
                 }
             }
@@ -1059,11 +1092,13 @@ namespace PLC_Test
                 if (value == returnvalue)
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    result.Rows[num - 1].SetField(columnindex + i, "成功");
                     pass++;
                 }
                 else
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    result.Rows[num - 1].SetField(columnindex + i, "失败");
                     nopass++;
                 }
             }
@@ -1104,11 +1139,13 @@ namespace PLC_Test
                 if (value == returnvalue)
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    result.Rows[num - 1].SetField(columnindex + i, "成功");
                     pass++;
                 }
                 else
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    result.Rows[num - 1].SetField(columnindex + i, "失败");
                     nopass++;
                 }
             }
@@ -1132,11 +1169,13 @@ namespace PLC_Test
                 if (value == returnvalue)
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    result.Rows[num - 1].SetField(columnindex + i, "成功");
                     pass++;
                 }
                 else
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    result.Rows[num - 1].SetField(columnindex + i, "失败");
                     nopass++;
                 }
             }
@@ -1147,6 +1186,33 @@ namespace PLC_Test
             }
             catch { }
             Thread.Sleep(1);
+        }
+
+        public DataTable GetResultDataTable(DataTable dt, int i)
+        {
+            try
+            {
+                for (int j = 1; j <= i; j++)
+                {
+                    dt.Columns.Add("第" + j.ToString() + "次测试");
+                }
+                return dt;
+            }
+            catch { }
+            return dt;
+        }
+
+        public void SaveResult(DataTable dt, string name)
+        {
+            if (!Directory.Exists(Application.StartupPath + "\\测试结果"))
+            {
+                Directory.CreateDirectory(Application.StartupPath + "\\测试结果");
+            }
+            Function.SaveDataTableinExcel(dt, Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
+            if (MessageBox.Show("已将结果保存在程序目录，是否现在打开？", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                Process.Start(Application.StartupPath + "\\测试结果\\" + name + ".xlsx"); 
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -1160,9 +1226,9 @@ namespace PLC_Test
             if (rBsingle.Checked)
             {
                 isSingleTest = true;
-                dataGridtest.Columns[7].HeaderText = "读写类型";
-                dataGridtest.Columns[7].DataPropertyName = "读写类型";
-            }
+                dataGridtest.Columns["testtype"].HeaderText = "读写类型";
+                dataGridtest.Columns["testtype"].DataPropertyName = "读写类型";
+                bindingTest.ResetBindings(false);            }
         }
 
         private void rBcircle_CheckedChanged(object sender, EventArgs e)
@@ -1170,8 +1236,9 @@ namespace PLC_Test
             if (rBcircle.Checked)
             {
                 isSingleTest = false;
-                dataGridtest.Columns[7].HeaderText = "测试类型";
-                dataGridtest.Columns[7].DataPropertyName = "测试类型";
+                dataGridtest.Columns["testtype"].HeaderText = "测试类型";
+                dataGridtest.Columns["testtype"].DataPropertyName = "测试类型";
+                bindingTest.ResetBindings(false);
             }
         }
     }
