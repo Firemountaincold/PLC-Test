@@ -25,6 +25,7 @@ namespace PLC_Test
         //标志
         public bool isConnectTCP = false;
         public bool isSingleTest = true;
+        public bool isPassTest = false;
         //线程
         public Thread receThread;
         public Thread testThread;
@@ -287,7 +288,8 @@ namespace PLC_Test
                 }
                 else
                 {
-
+                    testThread = new Thread(new ParameterizedThreadStart(SingleTest));
+                    testThread.Start(tc);
                 }
             }
             catch (Exception ex)
@@ -538,14 +540,42 @@ namespace PLC_Test
                 {
                     datashow[i] = data[i];
                 }
-                int value = datashow[9] | datashow[10];//把数组转换成16进制字符串
-                return value;
+                if (datashow.Length <= 10)
+                {
+                    int value = datashow[datashow.Length - 1];
+                    return value;
+                }
+                else
+                {
+                    int value = datashow[datashow.Length - 2] | datashow[datashow.Length - 1];
+                    return value;
+                }//把数组转换成16进制字符串
             }
             catch (Exception e)
             {
                 AddInfo("连接出现了错误。" + e.Message, 2);
             }
             return -1;
+        }
+
+        public bool ReciMsg(ModbusTCPClient client, bool i)
+        {
+            byte[] data = new byte[1024];//定义数据接收数组
+            try
+            {
+                data = client.ReceiveMessage();//接收数据到data数组
+
+                int error = data[7];//定义所要显示的接收的数据的长度
+                if (error <= 128)
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                AddInfo("连接出现了错误。" + e.Message, 2);
+            }
+            return false;
         }
 
         public float ReciMsg(ModbusTCPClient client)
@@ -566,7 +596,7 @@ namespace PLC_Test
             }
             catch (Exception e)
             {
-                AddInfo("连接出现了错误。" + e.InnerException + e.Message, 2);
+                AddInfo("连接出现了错误。"  + e.Message, 2);
             }
             return -1;
         }
@@ -577,15 +607,10 @@ namespace PLC_Test
             AddInfo("测试开始！", 1);
             this.Invoke(new Action(() => { timerTest.Start(); }));
             int num = 0;
+            pass = 0;
+            nopass = 0;
             foreach (TestModel tm in (tc as ThreadClass).tms)
-            {
-                //读取每一个测试的数据
-                int time = tm.settime;
-                int PLCid = tm.PLCindex;
-                int objectid = tm.objectindex;
-                string method = tm.testtype;
-                short add = Convert.ToInt16(tm.memadd.ToString(), 16);
-                short value = Convert.ToInt16(tm.value.ToString(), 16);
+            { 
 
                 //进行测试
                 try
@@ -597,14 +622,8 @@ namespace PLC_Test
                     {
                         ObjectModel obj = Function.GetObjectModel((tc as ThreadClass).oms, tm);
                         PLCModel plc = Function.GetPLCModel((tc as ThreadClass).pms, tm);
-                        if (tm.testtype == "正循环")
-                        {
-                            Test_Clockwise(plc, obj, tm, i, num);
-                        }
-                        else if (tm.testtype == "负循环")
-                        {
-                            Test_AntiClockwise(plc, obj, tm, i, num);
-                        }
+                        ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
+                        Test_Single(plc, obj, tm, i, num);
                     }
                 }
                 catch (Exception ex)
@@ -717,56 +736,144 @@ namespace PLC_Test
             }
         }
 
-        public void Test_Single(PLCModel plc, TestModel tm, int i, int num)
+        public void Test_Single(PLCModel plc, ObjectModel obj, TestModel tm, int i, int num)
         {
             //单向连接：
+            isPassTest = false;
             string memtype = tm.memtype;
             string valuetype = tm.valuetype;
             string testtype = tm.testtype;
             short add = Convert.ToInt16(tm.memadd.ToString(), 16);
-            short value = Convert.ToInt16(tm.value.ToString(), 16);
-            ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
             if (testtype == "写")
             {
                 //发送写的功能码
-                if (memtype == "寄存器")
+                if (tm.memtype == "线圈")
                 {
-                    if (valuetype == "整数")
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    //发送写的功能码
+                    ushort valueon = 65280;
+                    short valueoff = 0;
+                    if (value == 1)
                     {
-                        
+                        tcpClient.Send(0x05, add, valueon);
                     }
-                    else if (valuetype == "浮点数")
+                    else if (value == 0)
                     {
-
+                        tcpClient.Send(0x05, add, valueoff);
                     }
-                    else if (valuetype == "1位定点小数")
+                    ConnectTCP(objClient, obj.objectip, obj.objectport);
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                        "。\r\n", 3);
+                }
+                else if (tm.valuetype != "浮点数")
+                {
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    //发送写的功能码
+                    tcpClient.Send(0x06, add, value);
+                    if (tm.valuetype == "整数")
                     {
-
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                            "。\r\n", 3);
                     }
-                    else if (valuetype == "2位定点小数")
+                    else if (tm.valuetype == "1位定点小数")
                     {
-
+                        float value2 = (float)value / 10;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                            "。\r\n", 3);
+                    }
+                    else if (tm.valuetype == "2位定点小数")
+                    {
+                        float value2 = (float)value / 100;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                            "。\r\n", 3);
                     }
                 }
-               else if (memtype == "线圈")
+                else if (tm.valuetype == "浮点数")
                 {
-
+                    float value = BitConverter.ToSingle(tm.value, 0);
+                    //发送写的功能码
+                    tcpClient.Send(0x10, add, value);
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                        "。\r\n", 3);
                 }
+                isPassTest = ReciMsg(tcpClient, true);
             }
             else if (testtype == "读")
             {
-                //发送读的功能码
-                tcpClient.Send(0x03, add, Convert.ToInt16(1));
+                if (tm.memtype == "线圈")
+                {
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    tcpClient.Send(0x01, add, Convert.ToInt16(1));
+                    Thread.Sleep(1);
+                    int returnvalue = ReciMsg(tcpClient, 1);
+                    if (returnvalue == -1)
+                    {
+                        AddInfo("接受数据失败。", 2);
+                    }
+
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value.ToString() + 
+                        " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+                    if (value == returnvalue)
+                    {
+                        isPassTest = true;
+                    }
+                }
+                else if (tm.valuetype != "浮点数")
+                {
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    //发送读的功能码
+                    tcpClient.Send(0x03, add, Convert.ToInt16(1));
+                    Thread.Sleep(1);
+                    int returnvalue = ReciMsg(tcpClient, 1);
+                    if (returnvalue == -1)
+                    {
+                        AddInfo("接受数据失败。", 2);
+                    }
+                    if (tm.valuetype == "整数")
+                    {
+
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value.ToString() +
+                            " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+                    }
+                    else if (tm.valuetype == "1位定点小数")
+                    {
+                        float returnvalue2 = (float)returnvalue / 10;
+                        float value2 = (float)value / 10;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value2.ToString() +
+                            " 。读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
+                    }
+                    else if (tm.valuetype == "2位定点小数")
+                    {
+                        float returnvalue2 = (float)returnvalue / 100;
+                        float value2 = (float)value / 100;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value2.ToString() +
+                            " 。读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
+                    }
+                    if (value == returnvalue)
+                    {
+                        isPassTest = true;
+                    }
+                }
+                else if (tm.valuetype == "浮点数")
+                {
+                    float value = BitConverter.ToSingle(tm.value, 0);
+                    //发送读的功能码
+                    tcpClient.Send(0x03, add, Convert.ToInt16(2));
+                    Thread.Sleep(1);
+                    float returnvalue = ReciMsg(tcpClient);
+                    if (returnvalue == -1)
+                    {
+                        AddInfo("接受数据失败。", 2);
+                    }
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为 " + value.ToString() +
+                           " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+                    if (value == returnvalue)
+                    {
+                        isPassTest = true;
+                    }
+                }
             }
-            Thread.Sleep(1);
-            int returnvalue = ReciMsg(tcpClient, 1);
-            if (returnvalue == -1)
-            {
-                AddInfo("接受数据失败。", 2);
-            }
-            AddInfo("第" + (i + 1).ToString() + "轮测试：将对象的数据写为" + value.ToString() +
-                "。从 " + plc.PLCname + " PLC读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
-            if (value == returnvalue)
+            if (isPassTest)
             {
                 AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
                 pass++;
@@ -791,7 +898,46 @@ namespace PLC_Test
             //先向对象发信息，修改数据；
             //再给PLC发信息，读取对象数据，两相比较。
             short add = Convert.ToInt16(tm.memadd.ToString(), 16);
-            if (tm.valuetype != "浮点数")
+            if (tm.memtype == "线圈")
+            {
+                short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                ConnectTCP(objClient, obj.objectip, obj.objectport);
+                ushort valueon = 65280;
+                short valueoff = 0;
+                if (value == 1)
+                {
+                    objClient.Send(0x05, add, valueon);
+                }
+                else if (value == 0)
+                {
+                    objClient.Send(0x05, add, valueoff);
+                }
+                
+                //发送读的功能码
+                ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
+                tcpClient.Send(0x01, add, Convert.ToInt16(1));
+                Thread.Sleep(1);
+                int returnvalue = ReciMsg(tcpClient, 1);
+                if (returnvalue == -1)
+                {
+                    AddInfo("接受数据失败。", 2);
+                }
+
+                AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + obj.objecttype + " 对象的数据写为" + value.ToString() +
+                "。从 " + plc.PLCname + " PLC读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+
+                if (value == returnvalue)
+                {
+                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    pass++;
+                }
+                else
+                {
+                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    nopass++;
+                }
+            }
+            else if (tm.valuetype != "浮点数")
             {
                 short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                 ConnectTCP(objClient, obj.objectip, obj.objectport);
@@ -865,43 +1011,6 @@ namespace PLC_Test
                     nopass++;
                 }
             }
-            else if (tm.memtype == "线圈")
-            {
-                short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
-                ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
-                //发送写的功能码
-                if (value == 1)
-                {
-                    tcpClient.Send(0x05, add, 0xFF00);
-                }
-                else if (value == 0)
-                {
-                    tcpClient.Send(0x05, add, 0x0000);
-                }
-                ConnectTCP(objClient, obj.objectip, obj.objectport);
-                //发送读的功能码
-                objClient.Send(0x01, add, Convert.ToInt16(1));
-                Thread.Sleep(1);
-                int returnvalue = ReciMsg(objClient, 1);
-                if (returnvalue == -1)
-                {
-                    AddInfo("接受数据失败。", 2);
-                }
-
-                AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + obj.objecttype + " 对象的数据写为" + value.ToString() +
-                "。从 " + plc.PLCname + " PLC读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
-
-                if (value == returnvalue)
-                {
-                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
-                    pass++;
-                }
-                else
-                {
-                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
-                    nopass++;
-                }
-            }
             try
             {
                 objClient.Disconnect();
@@ -917,7 +1026,48 @@ namespace PLC_Test
             //先向PLC发信息，修改数据；
             //再给对象发信息，读取对象数据，两相比较。
             short add = Convert.ToInt16(tm.memadd.ToString(), 16);
-            if (tm.valuetype != "浮点数")
+            if (tm.memtype == "线圈")
+            {
+                short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
+                //发送写的功能码
+                ushort valueon = 65280;
+                short valueoff = 0;
+                if (value == 1)
+                {
+                    tcpClient.Send(0x05, add, valueon);
+                    AddInfo(BitConverter.ToString(tcpClient.GetTCPFrame(0x05, add, valueon)), 1);
+                }
+                else if (value == 0)
+                {
+                    tcpClient.Send(0x05, add, valueoff);
+                    AddInfo(BitConverter.ToString(tcpClient.GetTCPFrame(0x05, add, valueoff)), 1);
+                }
+                ConnectTCP(objClient, obj.objectip, obj.objectport);
+                //发送读的功能码
+                objClient.Send(0x01, add, Convert.ToInt16(1));
+                Thread.Sleep(1);
+                int returnvalue = ReciMsg(objClient, 1);
+                if (returnvalue == -1)
+                {
+                    AddInfo("接受数据失败。", 2);
+                }
+
+                AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + plc.PLCname + " PLC的数据写为" + value.ToString() +
+                    "。从对象 " + obj.objecttype + " 读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+
+                if (value == returnvalue)
+                {
+                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                    pass++;
+                }
+                else
+                {
+                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                    nopass++;
+                }
+            }
+            else if (tm.valuetype != "浮点数")
             {
                 short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                 ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
@@ -934,22 +1084,22 @@ namespace PLC_Test
                 }
                 if (tm.valuetype == "整数")
                 {
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + obj.objecttype + " 对象的数据写为" + value.ToString() +
-                    "。从 " + plc.PLCname + " PLC读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + plc.PLCname + " PLC的数据写为" + value.ToString() +
+                    "。从对象 " + obj.objecttype + " 读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
                 }
                 else if (tm.valuetype == "1位定点小数")
                 {
                     float value2 = (float)value / 10;
                     float returnvalue2 = (float)returnvalue / 10;
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + obj.objecttype + " 对象的数据写为" + value2.ToString() +
-                    "。从 " + plc.PLCname + " PLC读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + plc.PLCname + " PLC的数据写为" + value2.ToString() +
+                    "。从对象 " + obj.objecttype + " 读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
                 }
                 else if (tm.valuetype == "2位定点小数")
                 {
                     float value2 = (float)value / 100;
                     float returnvalue2 = (float)returnvalue / 100;
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + obj.objecttype + " 对象的数据写为" + value2.ToString() +
-                    "。从 " + plc.PLCname + " PLC读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + plc.PLCname + " PLC的数据写为" + value2.ToString() +
+                    "。从对象 " + obj.objecttype + " 读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
                 }
                 if (value == returnvalue)
                 {
@@ -979,43 +1129,6 @@ namespace PLC_Test
                 }
                 AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + plc.PLCname + " PLC的数据写为" + value.ToString() +
                     "。从对象 " + obj.objecttype + " 读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
-                if (value == returnvalue)
-                {
-                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
-                    pass++;
-                }
-                else
-                {
-                    AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
-                    nopass++;
-                }
-            }
-            else if (tm.memtype == "线圈")
-            {
-                short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
-                ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
-                //发送写的功能码
-                if (value == 1)
-                {
-                    tcpClient.Send(0x05, add, 0xFF00);
-                }
-                else if (value == 0)
-                {
-                    tcpClient.Send(0x05, add, 0x0000);
-                }
-                ConnectTCP(objClient, obj.objectip, obj.objectport);
-                //发送读的功能码
-                objClient.Send(0x01, add, Convert.ToInt16(1));
-                Thread.Sleep(1);
-                int returnvalue = ReciMsg(objClient, 1);
-                if (returnvalue == -1)
-                {
-                    AddInfo("接受数据失败。", 2);
-                }
-
-                AddInfo("第" + (i + 1).ToString() + "轮测试：将 " + obj.objecttype + " 对象的数据写为" + value.ToString() +
-                "。从 " + plc.PLCname + " PLC读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
-                
                 if (value == returnvalue)
                 {
                     AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);

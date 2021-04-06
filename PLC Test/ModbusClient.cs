@@ -31,6 +31,29 @@ namespace Modbus_Client
             return pdu;
         }
 
+        public byte[] GetPDU(int type, short add, ushort value)
+        {
+            //生成PDU，其他形式的继续重载就行
+            //可用于功能码0x01,0x02,0x03,0x04,0x05,0x06
+            bool isbigendian = false;//windows是小字节序
+            byte[] byteadd = BitConverter.GetBytes(Convert.ToInt16(add + 1));//地址从零开始不用+1
+            byte[] bytevalue = BitConverter.GetBytes(value);
+            if (!isbigendian)//如果是小字节序，需要调换一下位置
+            {
+                byte temp = byteadd[0];
+                byteadd[0] = byteadd[1];
+                byteadd[1] = temp;
+                temp = bytevalue[0];
+                bytevalue[0] = bytevalue[1];
+                bytevalue[1] = temp;
+            }
+            byte[] pdu = new byte[byteadd.Length + bytevalue.Length + 1];
+            pdu[0] = Convert.ToByte(type);
+            Buffer.BlockCopy(byteadd, 0, pdu, 1, byteadd.Length);
+            Buffer.BlockCopy(bytevalue, 0, pdu, byteadd.Length + 1, bytevalue.Length);
+            return pdu;
+        }
+
         public byte[] GetPDU(int type, short add, float value)
         {
             //生成PDU，其他形式的继续重载就行
@@ -84,6 +107,18 @@ namespace Modbus_Client
             return tcpframe;
         }
 
+        public byte[] GetTCPFrame(int type, short add, ushort value)
+        {
+            //组装TCP帧
+            byte[] pdu = this.GetPDU(type, add, value);
+            byte pdulength = Convert.ToByte(pdu.Length + 1);
+            byte[] tcphead = { 0x00, 0x01, 0x00, 0x00, 0x00, pdulength, 0x01 };
+            byte[] tcpframe = new byte[pdu.Length + tcphead.Length];
+            Buffer.BlockCopy(tcphead, 0, tcpframe, 0, tcphead.Length);
+            Buffer.BlockCopy(pdu, 0, tcpframe, tcphead.Length, pdu.Length);
+            return tcpframe;
+        }
+
         public byte[] GetTCPFrame(int type, short add, float value)
         {
             //组装TCP帧
@@ -97,6 +132,14 @@ namespace Modbus_Client
         }
 
         public byte[] Send(int type, short add, short value)
+        {
+            //发送功能码，并返回生成的功能码
+            byte[] data = GetTCPFrame(type, add, value);
+            newclient.Send(data);
+            return (data);
+        }
+
+        public byte[] Send(int type, short add, ushort value)
         {
             //发送功能码，并返回生成的功能码
             byte[] data = GetTCPFrame(type, add, value);
