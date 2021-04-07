@@ -61,6 +61,8 @@ namespace PLC_Test
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.buttonrestart = new System.Windows.Forms.Button();
+            this.buttonexit = new System.Windows.Forms.Button();
             this.rBcircle = new System.Windows.Forms.RadioButton();
             this.rBsingle = new System.Windows.Forms.RadioButton();
             this.buttonendtest = new System.Windows.Forms.Button();
@@ -83,8 +85,6 @@ namespace PLC_Test
             this.checkBoxsavelog = new System.Windows.Forms.CheckBox();
             this.timersavelog = new System.Windows.Forms.Timer(this.components);
             this.timerTest = new System.Windows.Forms.Timer(this.components);
-            this.buttonexit = new System.Windows.Forms.Button();
-            this.buttonrestart = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridPLC)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridObject)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -107,6 +107,7 @@ namespace PLC_Test
             this.dataGridPLC.RowTemplate.Height = 27;
             this.dataGridPLC.Size = new System.Drawing.Size(629, 104);
             this.dataGridPLC.TabIndex = 0;
+            this.dataGridPLC.TabStop = false;
             // 
             // PLCid
             // 
@@ -155,6 +156,7 @@ namespace PLC_Test
             this.dataGridObject.RowTemplate.Height = 27;
             this.dataGridObject.Size = new System.Drawing.Size(629, 99);
             this.dataGridObject.TabIndex = 1;
+            this.dataGridObject.TabStop = false;
             // 
             // objectid
             // 
@@ -405,6 +407,26 @@ namespace PLC_Test
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "自动测试";
             // 
+            // buttonrestart
+            // 
+            this.buttonrestart.Location = new System.Drawing.Point(322, 117);
+            this.buttonrestart.Name = "buttonrestart";
+            this.buttonrestart.Size = new System.Drawing.Size(124, 25);
+            this.buttonrestart.TabIndex = 16;
+            this.buttonrestart.Text = "重新启动软件";
+            this.buttonrestart.UseVisualStyleBackColor = true;
+            this.buttonrestart.Click += new System.EventHandler(this.buttonrestart_Click);
+            // 
+            // buttonexit
+            // 
+            this.buttonexit.Location = new System.Drawing.Point(478, 117);
+            this.buttonexit.Name = "buttonexit";
+            this.buttonexit.Size = new System.Drawing.Size(124, 25);
+            this.buttonexit.TabIndex = 16;
+            this.buttonexit.Text = "退出软件";
+            this.buttonexit.UseVisualStyleBackColor = true;
+            this.buttonexit.Click += new System.EventHandler(this.buttonexit_Click);
+            // 
             // rBcircle
             // 
             this.rBcircle.AutoSize = true;
@@ -494,6 +516,7 @@ namespace PLC_Test
             this.dataGridtest.RowTemplate.Height = 27;
             this.dataGridtest.Size = new System.Drawing.Size(1280, 238);
             this.dataGridtest.TabIndex = 7;
+            this.dataGridtest.TabStop = false;
             // 
             // settime
             // 
@@ -606,26 +629,6 @@ namespace PLC_Test
             // 
             this.timerTest.Interval = 1000;
             this.timerTest.Tick += new System.EventHandler(this.timerTest_Tick);
-            // 
-            // buttonexit
-            // 
-            this.buttonexit.Location = new System.Drawing.Point(478, 117);
-            this.buttonexit.Name = "buttonexit";
-            this.buttonexit.Size = new System.Drawing.Size(124, 25);
-            this.buttonexit.TabIndex = 16;
-            this.buttonexit.Text = "退出软件";
-            this.buttonexit.UseVisualStyleBackColor = true;
-            this.buttonexit.Click += new System.EventHandler(this.buttonexit_Click);
-            // 
-            // buttonrestart
-            // 
-            this.buttonrestart.Location = new System.Drawing.Point(322, 117);
-            this.buttonrestart.Name = "buttonrestart";
-            this.buttonrestart.Size = new System.Drawing.Size(124, 25);
-            this.buttonrestart.TabIndex = 16;
-            this.buttonrestart.Text = "重新启动软件";
-            this.buttonrestart.UseVisualStyleBackColor = true;
-            this.buttonrestart.Click += new System.EventHandler(this.buttonrestart_Click);
             // 
             // Form1
             // 

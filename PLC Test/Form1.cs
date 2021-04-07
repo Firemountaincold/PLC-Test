@@ -89,6 +89,13 @@ namespace PLC_Test
                 bindingobject.DataSource = loadxml2;
                 AddInfo("已加载Object配置文件。", 1);
                 bindingobject.ResetBindings(false);
+
+                dataGridPLC.ClearSelection();
+                dataGridPLC.CurrentCell = null;
+                dataGridtest.ClearSelection();
+                dataGridtest.CurrentCell = null;
+                dataGridObject.ClearSelection();
+                dataGridObject.CurrentCell = null;
             }
             catch(Exception ex)
             {
@@ -151,6 +158,8 @@ namespace PLC_Test
                     bindingPLC.DataSource = loadxml;
                     AddInfo("已加载PLC配置文件：" + path, 1);
                     bindingPLC.ResetBindings(false);
+                    dataGridPLC.ClearSelection();
+                    dataGridPLC.CurrentCell = null;
                 }
             }
             catch (Exception ex)
@@ -186,33 +195,6 @@ namespace PLC_Test
             }
         }
 
-        private void bsaveconfigo_Click(object sender, EventArgs e)
-        {
-            //保存object配置文件
-            try
-            {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "XML文件(*.xml;*.xaml)|*.xml;*.xaml";
-                if (!Directory.Exists(Application.StartupPath + "\\设备配置"))
-                {
-                    Directory.CreateDirectory(Application.StartupPath + "\\设备配置");
-                }
-                saveFileDialog.InitialDirectory = Application.StartupPath + "\\设备配置";
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string path = saveFileDialog.FileName;
-                    DataTable dt = DataGridViewToTable(dataGridObject);
-                    dt.TableName = "Object";
-                    dt.WriteXml(path);
-                    AddInfo("已保存Object配置文件：" + path, 1);
-                }
-            }
-            catch (Exception ex)
-            {
-                AddInfo(ex.Message, 2);
-            }
-        }
-
         private void bloadconfigo_Click(object sender, EventArgs e)
         {
             //加载object配置文件
@@ -235,6 +217,35 @@ namespace PLC_Test
                     bindingobject.DataSource = loadxml;
                     AddInfo("已加载Object配置文件：" + path, 1);
                     bindingobject.ResetBindings(false);
+                    dataGridObject.ClearSelection();
+                    dataGridObject.CurrentCell = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                AddInfo(ex.Message, 2);
+            }
+        }
+
+        private void bsaveconfigo_Click(object sender, EventArgs e)
+        {
+            //保存object配置文件
+            try
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "XML文件(*.xml;*.xaml)|*.xml;*.xaml";
+                if (!Directory.Exists(Application.StartupPath + "\\设备配置"))
+                {
+                    Directory.CreateDirectory(Application.StartupPath + "\\设备配置");
+                }
+                saveFileDialog.InitialDirectory = Application.StartupPath + "\\设备配置";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string path = saveFileDialog.FileName;
+                    DataTable dt = DataGridViewToTable(dataGridObject);
+                    dt.TableName = "Object";
+                    dt.WriteXml(path);
+                    AddInfo("已保存Object配置文件：" + path, 1);
                 }
             }
             catch (Exception ex)
@@ -267,6 +278,8 @@ namespace PLC_Test
                     result.Clear();
                     result = dtexcel;
                     columnindex = dtexcel.Columns.Count;
+                    dataGridtest.ClearSelection();
+                    dataGridtest.CurrentCell = null;
                 }
             }
             catch (Exception ex)
@@ -537,6 +550,7 @@ namespace PLC_Test
 
         public int ReciMsg(ModbusTCPClient client, int num)
         {
+            //返回收到的回复的值的信息
             byte[] data = new byte[1024];//定义数据接收数组
             try
             {
@@ -568,6 +582,7 @@ namespace PLC_Test
 
         public bool ReciMsg(ModbusTCPClient client, bool i)
         {
+            //接受回复是否异常
             byte[] data = new byte[1024];//定义数据接收数组
             try
             {
@@ -588,6 +603,7 @@ namespace PLC_Test
 
         public float ReciMsg(ModbusTCPClient client)
         {
+            //接受浮点数
             byte[] data = new byte[1024];//定义数据接收数组
             try
             {
@@ -614,8 +630,8 @@ namespace PLC_Test
             Thread.Sleep(500);
             AddInfo("测试开始！", 1);
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = true; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
             this.Invoke(new Action(() => { timerTest.Start(); }));
             int num = 0;
             pass = 0;
@@ -652,8 +668,8 @@ namespace PLC_Test
             testThread.Abort();
             tcpClient.Disconnect();
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = false; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
             this.Invoke(new Action(() => { timerTest.Stop(); }));
             timer = 0;
         }
@@ -663,8 +679,8 @@ namespace PLC_Test
             Thread.Sleep(500);
             AddInfo("测试开始！", 1);
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = true; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
             this.Invoke(new Action(() => { timerTest.Start(); }));
             int num = 0;
             pass = 0;
@@ -714,8 +730,8 @@ namespace PLC_Test
             testThread.Abort();
             tcpClient.Disconnect();
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = false; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
-            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
             this.Invoke(new Action(() => { timerTest.Stop(); }));
             timer = 0;
         }
@@ -1200,6 +1216,7 @@ namespace PLC_Test
 
         public DataTable GetResultDataTable(DataTable dt, int i)
         {
+            //给输出结果表格加上新列
             try
             {
                 for (int j = 1; j <= i; j++)
@@ -1214,9 +1231,14 @@ namespace PLC_Test
 
         public void SaveResult(DataTable dt, string name)
         {
+            //保存结果表格
             if (!Directory.Exists(Application.StartupPath + "\\测试结果"))
             {
                 Directory.CreateDirectory(Application.StartupPath + "\\测试结果");
+            }
+            if(File.Exists(Application.StartupPath + "\\测试结果\\" + name + ".xlsx"))
+            {
+                File.Delete(Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
             }
             Function.SaveDataTableinExcel(dt, Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
             if (MessageBox.Show("已将结果保存在程序目录，是否现在打开？", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
