@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PLC_Test
+﻿namespace PLC_Test
 {
     public class TestModel
     {
@@ -95,7 +89,7 @@ namespace PLC_Test
         {
 
         }
-        public PLCModel(int PLCid,string PLCname,string PLCip,string PLcport)
+        public PLCModel(int PLCid, string PLCname, string PLCip, string PLcport)
         {
             this.PLCid = PLCid;
             this.PLCname = PLCname;
@@ -131,7 +125,7 @@ namespace PLC_Test
         {
 
         }
-        public ObjectModel(int objectid,string objectip,string objectport,string objecttype)
+        public ObjectModel(int objectid, string objectip, string objectport, string objecttype)
         {
             this.objectid = objectid;
             this.objectip = objectip;

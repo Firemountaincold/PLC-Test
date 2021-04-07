@@ -69,12 +69,6 @@ namespace PLC_Test
             this.label7 = new System.Windows.Forms.Label();
             this.buttonloadtest = new System.Windows.Forms.Button();
             this.dataGridtest = new System.Windows.Forms.DataGridView();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.textBoxinfo = new System.Windows.Forms.RichTextBox();
-            this.checkBoxsavelog = new System.Windows.Forms.CheckBox();
-            this.timersavelog = new System.Windows.Forms.Timer(this.components);
-            this.timerTest = new System.Windows.Forms.Timer(this.components);
             this.settime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PLCindex = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.objectindex = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -83,6 +77,14 @@ namespace PLC_Test
             this.valuetype = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.testtype = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.textBoxinfo = new System.Windows.Forms.RichTextBox();
+            this.checkBoxsavelog = new System.Windows.Forms.CheckBox();
+            this.timersavelog = new System.Windows.Forms.Timer(this.components);
+            this.timerTest = new System.Windows.Forms.Timer(this.components);
+            this.buttonexit = new System.Windows.Forms.Button();
+            this.buttonrestart = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridPLC)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridObject)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -252,7 +254,7 @@ namespace PLC_Test
             // 
             this.textBoxconn.BackColor = System.Drawing.SystemColors.Window;
             this.textBoxconn.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxconn.Location = new System.Drawing.Point(103, 136);
+            this.textBoxconn.Location = new System.Drawing.Point(135, 136);
             this.textBoxconn.Name = "textBoxconn";
             this.textBoxconn.ReadOnly = true;
             this.textBoxconn.Size = new System.Drawing.Size(86, 18);
@@ -264,9 +266,9 @@ namespace PLC_Test
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(15, 137);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(82, 15);
+            this.label10.Size = new System.Drawing.Size(112, 15);
             this.label10.TabIndex = 11;
-            this.label10.Text = "连接状态：";
+            this.label10.Text = "手动连接状态：";
             // 
             // buttonconn
             // 
@@ -385,6 +387,8 @@ namespace PLC_Test
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.buttonrestart);
+            this.groupBox2.Controls.Add(this.buttonexit);
             this.groupBox2.Controls.Add(this.rBcircle);
             this.groupBox2.Controls.Add(this.rBsingle);
             this.groupBox2.Controls.Add(this.buttonendtest);
@@ -416,7 +420,7 @@ namespace PLC_Test
             // 
             this.rBsingle.AutoSize = true;
             this.rBsingle.Checked = true;
-            this.rBsingle.Location = new System.Drawing.Point(24, 127);
+            this.rBsingle.Location = new System.Drawing.Point(30, 127);
             this.rBsingle.Name = "rBsingle";
             this.rBsingle.Size = new System.Drawing.Size(88, 19);
             this.rBsingle.TabIndex = 14;
@@ -427,9 +431,9 @@ namespace PLC_Test
             // 
             // buttonendtest
             // 
-            this.buttonendtest.Location = new System.Drawing.Point(507, 23);
+            this.buttonendtest.Location = new System.Drawing.Point(478, 34);
             this.buttonendtest.Name = "buttonendtest";
-            this.buttonendtest.Size = new System.Drawing.Size(100, 25);
+            this.buttonendtest.Size = new System.Drawing.Size(124, 25);
             this.buttonendtest.TabIndex = 12;
             this.buttonendtest.Text = "结束测试";
             this.buttonendtest.UseVisualStyleBackColor = true;
@@ -437,9 +441,9 @@ namespace PLC_Test
             // 
             // buttonstarttest
             // 
-            this.buttonstarttest.Location = new System.Drawing.Point(379, 23);
+            this.buttonstarttest.Location = new System.Drawing.Point(322, 34);
             this.buttonstarttest.Name = "buttonstarttest";
-            this.buttonstarttest.Size = new System.Drawing.Size(100, 25);
+            this.buttonstarttest.Size = new System.Drawing.Size(124, 25);
             this.buttonstarttest.TabIndex = 11;
             this.buttonstarttest.Text = "开始测试";
             this.buttonstarttest.UseVisualStyleBackColor = true;
@@ -447,7 +451,7 @@ namespace PLC_Test
             // 
             // textBoxepoch
             // 
-            this.textBoxepoch.Location = new System.Drawing.Point(252, 22);
+            this.textBoxepoch.Location = new System.Drawing.Point(125, 81);
             this.textBoxepoch.Name = "textBoxepoch";
             this.textBoxepoch.Size = new System.Drawing.Size(67, 25);
             this.textBoxepoch.TabIndex = 10;
@@ -455,7 +459,7 @@ namespace PLC_Test
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(169, 28);
+            this.label7.Location = new System.Drawing.Point(31, 87);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(82, 15);
             this.label7.TabIndex = 1;
@@ -463,7 +467,7 @@ namespace PLC_Test
             // 
             // buttonloadtest
             // 
-            this.buttonloadtest.Location = new System.Drawing.Point(24, 23);
+            this.buttonloadtest.Location = new System.Drawing.Point(30, 34);
             this.buttonloadtest.Name = "buttonloadtest";
             this.buttonloadtest.Size = new System.Drawing.Size(125, 25);
             this.buttonloadtest.TabIndex = 0;
@@ -490,54 +494,6 @@ namespace PLC_Test
             this.dataGridtest.RowTemplate.Height = 27;
             this.dataGridtest.Size = new System.Drawing.Size(1280, 238);
             this.dataGridtest.TabIndex = 7;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(19, 198);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(67, 15);
-            this.label8.TabIndex = 8;
-            this.label8.Text = "测试流程";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(670, 472);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(67, 15);
-            this.label9.TabIndex = 9;
-            this.label9.Text = "运行日志";
-            // 
-            // textBoxinfo
-            // 
-            this.textBoxinfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxinfo.Location = new System.Drawing.Point(673, 496);
-            this.textBoxinfo.Name = "textBoxinfo";
-            this.textBoxinfo.ReadOnly = true;
-            this.textBoxinfo.Size = new System.Drawing.Size(629, 241);
-            this.textBoxinfo.TabIndex = 10;
-            this.textBoxinfo.Text = "";
-            // 
-            // checkBoxsavelog
-            // 
-            this.checkBoxsavelog.AutoSize = true;
-            this.checkBoxsavelog.Location = new System.Drawing.Point(1179, 472);
-            this.checkBoxsavelog.Name = "checkBoxsavelog";
-            this.checkBoxsavelog.Size = new System.Drawing.Size(119, 19);
-            this.checkBoxsavelog.TabIndex = 11;
-            this.checkBoxsavelog.Text = "自动保存日志";
-            this.checkBoxsavelog.UseVisualStyleBackColor = true;
-            this.checkBoxsavelog.CheckedChanged += new System.EventHandler(this.checkBoxsavelog_CheckedChanged);
-            // 
-            // timersavelog
-            // 
-            this.timersavelog.Tick += new System.EventHandler(this.timersavelog_Tick);
-            // 
-            // timerTest
-            // 
-            this.timerTest.Interval = 1000;
-            this.timerTest.Tick += new System.EventHandler(this.timerTest_Tick);
             // 
             // settime
             // 
@@ -602,6 +558,74 @@ namespace PLC_Test
             this.testtype.HeaderText = "读写类型";
             this.testtype.MinimumWidth = 6;
             this.testtype.Name = "testtype";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(19, 198);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(67, 15);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "测试流程";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(670, 472);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(67, 15);
+            this.label9.TabIndex = 9;
+            this.label9.Text = "运行日志";
+            // 
+            // textBoxinfo
+            // 
+            this.textBoxinfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textBoxinfo.Location = new System.Drawing.Point(673, 496);
+            this.textBoxinfo.Name = "textBoxinfo";
+            this.textBoxinfo.ReadOnly = true;
+            this.textBoxinfo.Size = new System.Drawing.Size(629, 241);
+            this.textBoxinfo.TabIndex = 10;
+            this.textBoxinfo.Text = "";
+            // 
+            // checkBoxsavelog
+            // 
+            this.checkBoxsavelog.AutoSize = true;
+            this.checkBoxsavelog.Location = new System.Drawing.Point(1179, 472);
+            this.checkBoxsavelog.Name = "checkBoxsavelog";
+            this.checkBoxsavelog.Size = new System.Drawing.Size(119, 19);
+            this.checkBoxsavelog.TabIndex = 11;
+            this.checkBoxsavelog.Text = "自动保存日志";
+            this.checkBoxsavelog.UseVisualStyleBackColor = true;
+            this.checkBoxsavelog.CheckedChanged += new System.EventHandler(this.checkBoxsavelog_CheckedChanged);
+            // 
+            // timersavelog
+            // 
+            this.timersavelog.Tick += new System.EventHandler(this.timersavelog_Tick);
+            // 
+            // timerTest
+            // 
+            this.timerTest.Interval = 1000;
+            this.timerTest.Tick += new System.EventHandler(this.timerTest_Tick);
+            // 
+            // buttonexit
+            // 
+            this.buttonexit.Location = new System.Drawing.Point(478, 117);
+            this.buttonexit.Name = "buttonexit";
+            this.buttonexit.Size = new System.Drawing.Size(124, 25);
+            this.buttonexit.TabIndex = 16;
+            this.buttonexit.Text = "退出软件";
+            this.buttonexit.UseVisualStyleBackColor = true;
+            this.buttonexit.Click += new System.EventHandler(this.buttonexit_Click);
+            // 
+            // buttonrestart
+            // 
+            this.buttonrestart.Location = new System.Drawing.Point(322, 117);
+            this.buttonrestart.Name = "buttonrestart";
+            this.buttonrestart.Size = new System.Drawing.Size(124, 25);
+            this.buttonrestart.TabIndex = 16;
+            this.buttonrestart.Text = "重新启动软件";
+            this.buttonrestart.UseVisualStyleBackColor = true;
+            this.buttonrestart.Click += new System.EventHandler(this.buttonrestart_Click);
             // 
             // Form1
             // 
@@ -693,6 +717,8 @@ namespace PLC_Test
         private System.Windows.Forms.DataGridViewTextBoxColumn valuetype;
         private System.Windows.Forms.DataGridViewTextBoxColumn value;
         private System.Windows.Forms.DataGridViewTextBoxColumn testtype;
+        private System.Windows.Forms.Button buttonrestart;
+        private System.Windows.Forms.Button buttonexit;
     }
 }
 

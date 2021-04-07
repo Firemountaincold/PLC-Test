@@ -613,6 +613,9 @@ namespace PLC_Test
         {
             Thread.Sleep(500);
             AddInfo("测试开始！", 1);
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = true; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
             this.Invoke(new Action(() => { timerTest.Start(); }));
             int num = 0;
             pass = 0;
@@ -648,6 +651,9 @@ namespace PLC_Test
             isConnectTCP = false;
             testThread.Abort();
             tcpClient.Disconnect();
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = false; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
             this.Invoke(new Action(() => { timerTest.Stop(); }));
             timer = 0;
         }
@@ -656,6 +662,9 @@ namespace PLC_Test
         {
             Thread.Sleep(500);
             AddInfo("测试开始！", 1);
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = true; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
             this.Invoke(new Action(() => { timerTest.Start(); }));
             int num = 0;
             pass = 0;
@@ -704,6 +713,9 @@ namespace PLC_Test
             isConnectTCP = false;
             testThread.Abort();
             tcpClient.Disconnect();
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = false; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
             this.Invoke(new Action(() => { timerTest.Stop(); }));
             timer = 0;
         }
@@ -772,7 +784,7 @@ namespace PLC_Test
             if (testtype == "写")
             {
                 //发送写的功能码
-                if (tm.memtype == "线圈")
+                if (memtype == "线圈")
                 {
                     short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                     //发送写的功能码
@@ -786,34 +798,33 @@ namespace PLC_Test
                     {
                         tcpClient.Send(0x05, add, valueoff);
                     }
-                    ConnectTCP(objClient, obj.objectip, obj.objectport);
                     AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
                         "。\r\n", 3);
                 }
-                else if (tm.valuetype != "浮点数")
+                else if (valuetype != "浮点数")
                 {
                     short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                     //发送写的功能码
                     tcpClient.Send(0x06, add, value);
-                    if (tm.valuetype == "整数")
+                    if (valuetype == "整数")
                     {
                         AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
                             "。\r\n", 3);
                     }
-                    else if (tm.valuetype == "1位定点小数")
+                    else if (valuetype == "1位定点小数")
                     {
                         float value2 = (float)value / 10;
                         AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
                             "。\r\n", 3);
                     }
-                    else if (tm.valuetype == "2位定点小数")
+                    else if (valuetype == "2位定点小数")
                     {
                         float value2 = (float)value / 100;
                         AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
                             "。\r\n", 3);
                     }
                 }
-                else if (tm.valuetype == "浮点数")
+                else if (valuetype == "浮点数")
                 {
                     float value = BitConverter.ToSingle(tm.value, 0);
                     //发送写的功能码
@@ -825,7 +836,7 @@ namespace PLC_Test
             }
             else if (testtype == "读")
             {
-                if (tm.memtype == "线圈")
+                if (memtype == "线圈")
                 {
                     short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                     tcpClient.Send(0x01, add, Convert.ToInt16(1));
@@ -843,7 +854,7 @@ namespace PLC_Test
                         isPassTest = true;
                     }
                 }
-                else if (tm.valuetype != "浮点数")
+                else if (valuetype != "浮点数")
                 {
                     short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                     //发送读的功能码
@@ -854,20 +865,20 @@ namespace PLC_Test
                     {
                         AddInfo("接受数据失败。", 2);
                     }
-                    if (tm.valuetype == "整数")
+                    if (valuetype == "整数")
                     {
 
                         AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value.ToString() +
                             " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
                     }
-                    else if (tm.valuetype == "1位定点小数")
+                    else if (valuetype == "1位定点小数")
                     {
                         float returnvalue2 = (float)returnvalue / 10;
                         float value2 = (float)value / 10;
                         AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value2.ToString() +
                             " 。读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
                     }
-                    else if (tm.valuetype == "2位定点小数")
+                    else if (valuetype == "2位定点小数")
                     {
                         float returnvalue2 = (float)returnvalue / 100;
                         float value2 = (float)value / 100;
@@ -879,7 +890,7 @@ namespace PLC_Test
                         isPassTest = true;
                     }
                 }
-                else if (tm.valuetype == "浮点数")
+                else if (valuetype == "浮点数")
                 {
                     float value = BitConverter.ToSingle(tm.value, 0);
                     //发送读的功能码
@@ -912,7 +923,6 @@ namespace PLC_Test
             }
             try
             {
-                objClient.Disconnect();
                 tcpClient.Disconnect();
             }
             catch { }
@@ -1239,6 +1249,25 @@ namespace PLC_Test
                 dataGridtest.Columns["testtype"].HeaderText = "测试类型";
                 dataGridtest.Columns["testtype"].DataPropertyName = "测试类型";
                 bindingTest.ResetBindings(false);
+            }
+        }
+
+        private void buttonrestart_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("是否重新启动软件？", "提示", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                Process.GetCurrentProcess().Kill();
+                Application.Exit();
+            }
+        }
+
+        private void buttonexit_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("是否退出？", "提示", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                Process.GetCurrentProcess().Kill();
+                Application.Exit();
             }
         }
     }

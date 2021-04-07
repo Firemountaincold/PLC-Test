@@ -131,6 +131,7 @@ namespace PLC_Test
                         }
                     }
                     workBook.Write(fileStream);
+                    fileStream.Close();
                     workBook.Clear();
                 }
             }
