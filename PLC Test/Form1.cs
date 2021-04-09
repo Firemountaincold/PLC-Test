@@ -27,6 +27,7 @@ namespace PLC_Test
         public bool isSingleTest = true;
         public bool isPassTest = false;
         public bool isStopTest = false;
+        public bool isLongConn = true;
         //线程
         public Thread receThread;
         public Thread testThread;
@@ -54,7 +55,6 @@ namespace PLC_Test
             //加载配置文件
             textBoxPLCip.Text = ConfigurationManager.AppSettings["TestIP"];
             textBoxtestport.Text = ConfigurationManager.AppSettings["TestPort"];
-            textBoxPLCid.Text = ConfigurationManager.AppSettings["TestID"];
             textBoxepoch.Text = ConfigurationManager.AppSettings["Testepoch"];
             //加载本地IP
             List<string> PCIPArray = Function.GetLocalIp();
@@ -62,7 +62,7 @@ namespace PLC_Test
             {
                 comboBoxlocalIP.Items.Add(ip);
             }
-
+            this.Focus();
         }
 
         public void LoadDefualtConfig(string testpath, string plcpath, string objpath)
@@ -325,6 +325,11 @@ namespace PLC_Test
 
         private void buttonendtest_Click(object sender, EventArgs e)
         {
+            if (!isConnectTCP)
+            {
+                MessageBox.Show("请先开始测试！", "警告");
+                return;
+            }
             try
             {
                 isConnectTCP = false;
@@ -666,8 +671,20 @@ namespace PLC_Test
                     {
                         ObjectModel obj = Function.GetObjectModel((tc as ThreadClass).oms, tm);
                         PLCModel plc = Function.GetPLCModel((tc as ThreadClass).pms, tm);
-                        ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
-                        Test_Single(plc, obj, tm, i, num);
+                        if (!isLongConn)
+                        {
+                            ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
+                            Test_Single(plc, obj, tm, i, num);
+                            tcpClient.Disconnect();
+                        }
+                        else if (isLongConn)
+                        {
+                            if (!isConnectTCP)
+                            {
+                                ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
+                            }
+                            Test_Single(plc, obj, tm, i, num);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -681,7 +698,6 @@ namespace PLC_Test
             SaveResult(result, textBoxresult.Text);
             //结束
             isConnectTCP = false;
-            tcpClient.Disconnect();
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = true; }));
             dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.Enabled = true; }));
             dataGridObject.BeginInvoke(new Action(() => { dataGridObject.Enabled = true; }));
@@ -690,6 +706,10 @@ namespace PLC_Test
                 timerTest.Stop();
                 bindingTest.ResetBindings(false);
             }));
+            if (isLongConn)
+            {
+                tcpClient.Disconnect();
+            }
             timer = 0;
         }
 
@@ -978,11 +998,6 @@ namespace PLC_Test
                 result.Rows[num - 1].SetField(columnindex + i, "失败");
                 nopass++;
             }
-            try
-            {
-                tcpClient.Disconnect();
-            }
-            catch { }
             Thread.Sleep(1);
         }
 
@@ -1317,6 +1332,8 @@ namespace PLC_Test
             if (rBsingle.Checked)
             {
                 isSingleTest = true;
+                checkBoxsingleconn.Enabled = true;
+                checkBoxsingleconn.Checked = true;
                 dataGridtest.Columns["testtype"].HeaderText = "读写类型";
                 dataGridtest.Columns["testtype"].DataPropertyName = "读写类型";
                 bindingTest.ResetBindings(false);            }
@@ -1327,6 +1344,8 @@ namespace PLC_Test
             if (rBcircle.Checked)
             {
                 isSingleTest = false;
+                checkBoxsingleconn.Checked = false;
+                checkBoxsingleconn.Enabled = false;
                 dataGridtest.Columns["testtype"].HeaderText = "测试类型";
                 dataGridtest.Columns["testtype"].DataPropertyName = "测试类型";
                 bindingTest.ResetBindings(false);
@@ -1357,6 +1376,33 @@ namespace PLC_Test
             timerBytes.Interval = 250;
             textBoxsendbytes.Text = sendbytes.ToString();
             textBoxreceivebytes.Text = receivebytes.ToString();
+        }
+
+        private void checkBoxsingleconn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxsingleconn.Checked)
+            {
+                isLongConn = true;
+            }
+            else
+            {
+                isLongConn = false;
+            }
+        }
+
+        private void checkBoxsingleconn_MouseHover(object sender, EventArgs e)
+        {
+            ToolTip toolTip = new ToolTip();
+            toolTip.AutoPopDelay = 5000;
+            toolTip.InitialDelay = 100;
+            toolTip.ReshowDelay = 500;
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(checkBoxsingleconn, "请确保测试流程中连接的是同一PLC或对象。");
+        }
+
+        private void buttonopenconfig_Click(object sender, EventArgs e)
+        {
+            Process.Start("notepad.exe", Application.StartupPath + "\\PLC Test.exe.config");
         }
     }
 }
