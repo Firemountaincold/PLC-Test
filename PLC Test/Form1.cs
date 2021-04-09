@@ -26,6 +26,7 @@ namespace PLC_Test
         public bool isConnectTCP = false;
         public bool isSingleTest = true;
         public bool isPassTest = false;
+        public bool isStopTest = false;
         //线程
         public Thread receThread;
         public Thread testThread;
@@ -34,6 +35,8 @@ namespace PLC_Test
         public int pass = 0;
         public int nopass = 0;
         public int columnindex = 0;
+        public int sendbytes = 0;
+        public int receivebytes = 0;
         public DataTable result = new DataTable();
         //默认配置
         string defualtPLC = ConfigurationManager.AppSettings["DefaultPLC"];
@@ -302,6 +305,7 @@ namespace PLC_Test
                 ObjectModel[] objectModels = ReadObject();
                 AddInfo("已载入测试，本次测试共有" + testModels.Length.ToString() + "项，每项重复" + textBoxepoch.Text + "轮。", 1);
                 ThreadClass tc = new ThreadClass(testModels, plcModels, objectModels, Convert.ToInt32(textBoxepoch.Text));
+                isStopTest = false;
                 if (!isSingleTest)
                 {
                     testThread = new Thread(new ParameterizedThreadStart(CircleTest));
@@ -315,7 +319,7 @@ namespace PLC_Test
             }
             catch (Exception ex)
             {
-                AddInfo(ex.Source + "发生错误。" + ex.Message, 2);
+                AddInfo(ex.Source + "的" + ex.TargetSite + "发生错误。" + ex.Message, 2);
             }
         }
 
@@ -324,7 +328,7 @@ namespace PLC_Test
             try
             {
                 isConnectTCP = false;
-                testThread.Abort();
+                isStopTest = true;
                 tcpClient.Disconnect();
                 this.Invoke(new Action(() => { timerTest.Stop(); }));
                 timer = 0;
@@ -448,37 +452,37 @@ namespace PLC_Test
             for (int i = 0; i < dataGridtest.Rows.Count - 1; i++)
             {
                 testModels[TestModel.testi] = new TestModel();
-                testModels[TestModel.testi].settime = Convert.ToInt32(dataGridtest.Rows[i].Cells[0].Value);
-                testModels[TestModel.testi].PLCindex = Convert.ToInt32(dataGridtest.Rows[i].Cells[1].Value);
-                testModels[TestModel.testi].objectindex = Convert.ToInt32(dataGridtest.Rows[i].Cells[2].Value);
-                testModels[TestModel.testi].memadd = Convert.ToInt32(dataGridtest.Rows[i].Cells[3].Value);
-                testModels[TestModel.testi].memtype = Convert.ToString(dataGridtest.Rows[i].Cells[4].Value);
-                testModels[TestModel.testi].valuetype = Convert.ToString(dataGridtest.Rows[i].Cells[5].Value);
+                testModels[TestModel.testi].settime = Convert.ToInt32(dataGridtest.Rows[i].Cells[0].Value.ToString());
+                testModels[TestModel.testi].PLCindex = Convert.ToInt32(dataGridtest.Rows[i].Cells[1].Value.ToString());
+                testModels[TestModel.testi].objectindex = Convert.ToInt32(dataGridtest.Rows[i].Cells[2].Value.ToString());
+                testModels[TestModel.testi].memadd = Convert.ToInt32(dataGridtest.Rows[i].Cells[3].Value.ToString());
+                testModels[TestModel.testi].memtype = Convert.ToString(dataGridtest.Rows[i].Cells[4].Value.ToString());
+                testModels[TestModel.testi].valuetype = Convert.ToString(dataGridtest.Rows[i].Cells[5].Value.ToString());
                 if (testModels[TestModel.testi].memtype == "寄存器")
                 {
                     if (testModels[TestModel.testi].valuetype == "整数")
                     {
-                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(dataGridtest.Rows[i].Cells[6].Value));
+                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(dataGridtest.Rows[i].Cells[6].Value.ToString()));
                     }
                     else if (testModels[TestModel.testi].valuetype == "浮点数")
                     {
-                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToSingle(dataGridtest.Rows[i].Cells[6].Value));
+                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToSingle(dataGridtest.Rows[i].Cells[6].Value.ToString()));
                     }
                     else if (testModels[TestModel.testi].valuetype == "1位定点小数")
                     {
-                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(Convert.ToSingle(dataGridtest.Rows[i].Cells[6].Value)*10));
+                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(Convert.ToSingle(dataGridtest.Rows[i].Cells[6].Value.ToString()) *10));
                     }
                     else if (testModels[TestModel.testi].valuetype == "2位定点小数")
                     {
-                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(Convert.ToSingle(dataGridtest.Rows[i].Cells[6].Value)*100));
+                        testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(Convert.ToSingle(dataGridtest.Rows[i].Cells[6].Value.ToString()) *100));
                     }
                 }
                 else if (testModels[TestModel.testi].memtype == "线圈")
                 {
-                    testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(dataGridtest.Rows[i].Cells[6].Value));
+                    testModels[TestModel.testi].value = BitConverter.GetBytes(Convert.ToInt32(dataGridtest.Rows[i].Cells[6].Value.ToString()));
                 }
     
-                testModels[TestModel.testi].testtype = Convert.ToString(dataGridtest.Rows[i].Cells[7].Value);
+                testModels[TestModel.testi].testtype = Convert.ToString(dataGridtest.Rows[i].Cells[7].Value.ToString());
                 TestModel.testi++;
             }
             return testModels;
@@ -492,10 +496,10 @@ namespace PLC_Test
             for (int i = 0; i < dataGridPLC.Rows.Count - 1; i++)
             {
                 plcModels[PLCModel.plci] = new PLCModel();
-                plcModels[PLCModel.plci].PLCid = Convert.ToInt32(dataGridPLC.Rows[i].Cells[0].Value);
-                plcModels[PLCModel.plci].PLCname = Convert.ToString(dataGridPLC.Rows[i].Cells[1].Value);
-                plcModels[PLCModel.plci].PLCip = Convert.ToString(dataGridPLC.Rows[i].Cells[2].Value);
-                plcModels[PLCModel.plci].PLCport = Convert.ToString(dataGridPLC.Rows[i].Cells[3].Value);
+                plcModels[PLCModel.plci].PLCid = Convert.ToInt32(dataGridPLC.Rows[i].Cells[0].Value.ToString());
+                plcModels[PLCModel.plci].PLCname = Convert.ToString(dataGridPLC.Rows[i].Cells[1].Value.ToString());
+                plcModels[PLCModel.plci].PLCip = Convert.ToString(dataGridPLC.Rows[i].Cells[2].Value.ToString());
+                plcModels[PLCModel.plci].PLCport = Convert.ToString(dataGridPLC.Rows[i].Cells[3].Value.ToString());
                 PLCModel.plci++;
             }
             return plcModels;
@@ -509,10 +513,10 @@ namespace PLC_Test
             for (int i = 0; i < dataGridObject.Rows.Count - 1; i++)
             {
                 objectModels[ObjectModel.obji] = new ObjectModel();
-                objectModels[ObjectModel.obji].objectid = Convert.ToInt32(dataGridObject.Rows[i].Cells[0].Value);
-                objectModels[ObjectModel.obji].objectip = Convert.ToString(dataGridObject.Rows[i].Cells[1].Value);
-                objectModels[ObjectModel.obji].objectport = Convert.ToString(dataGridObject.Rows[i].Cells[2].Value);
-                objectModels[ObjectModel.obji].objecttype = Convert.ToString(dataGridObject.Rows[i].Cells[3].Value);
+                objectModels[ObjectModel.obji].objectid = Convert.ToInt32(dataGridObject.Rows[i].Cells[0].Value.ToString());
+                objectModels[ObjectModel.obji].objectip = Convert.ToString(dataGridObject.Rows[i].Cells[1].Value.ToString());
+                objectModels[ObjectModel.obji].objectport = Convert.ToString(dataGridObject.Rows[i].Cells[2].Value.ToString());
+                objectModels[ObjectModel.obji].objecttype = Convert.ToString(dataGridObject.Rows[i].Cells[3].Value.ToString());
                 ObjectModel.obji++;
             }
             return objectModels;
@@ -554,7 +558,7 @@ namespace PLC_Test
             byte[] data = new byte[1024];//定义数据接收数组
             try
             {
-                data = client.ReceiveMessage();//接收数据到data数组
+                data = client.ReceiveMessage();//接收数据到data数组 
 
                 int length = data[5];//读取数据长度
                 Byte[] datashow = new byte[length + 6];//定义所要显示的接收的数据的长度
@@ -562,6 +566,7 @@ namespace PLC_Test
                 {
                     datashow[i] = data[i];
                 }
+                receivebytes += datashow.Length;
                 if (datashow.Length <= 10)
                 {
                     int value = datashow[datashow.Length - 1];
@@ -587,6 +592,7 @@ namespace PLC_Test
             try
             {
                 data = client.ReceiveMessage();//接收数据到data数组
+                receivebytes += data[5] + 6;
 
                 int error = data[7];//定义所要显示的接收的数据的长度
                 if (error <= 128)
@@ -610,6 +616,7 @@ namespace PLC_Test
                 data = client.ReceiveMessage();//接收数据到data数组
 
                 int length = data[5];//读取数据长度
+                receivebytes += length + 6;
                 Byte[] datashow = new byte[4];//定义所要显示的接收的数据的长度
                 for (int i = 0; i < 4; i++)//将要显示的数据存放到数组datashow中
                 {
@@ -627,24 +634,33 @@ namespace PLC_Test
 
         public void SingleTest(object tc)
         {
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = false; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.Enabled = false; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.Enabled = false; }));
             Thread.Sleep(500);
             AddInfo("测试开始！", 1);
-            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = true; }));
-            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
-            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
             this.Invoke(new Action(() => { timerTest.Start(); }));
             int num = 0;
             pass = 0;
             nopass = 0;
             result = GetResultDataTable(result, (tc as ThreadClass).epoch);
             foreach (TestModel tm in (tc as ThreadClass).tms)
-            { 
-
+            {
+                //退出检测
+                if (isStopTest)
+                {
+                    break;
+                }
                 //进行测试
                 try
                 {
-                    num++;
                     Thread.Sleep((tm.settime - timer) * 1000);
+                    //退出检测
+                    if (isStopTest)
+                    {
+                        break;
+                    }
+                    num++;
                     AddInfo("第" + timer + "秒，开始第" + num.ToString() + "项" + tm.testtype + "测试：", 1);
                     for (int i = 0; i < (tc as ThreadClass).epoch; i++)
                     {
@@ -662,25 +678,28 @@ namespace PLC_Test
             AddInfo("共进行" + num.ToString() + "项测试，每项测试" + textBoxepoch.Text + "次，共测试" +
                 (num * Convert.ToInt32(textBoxepoch.Text)).ToString() + "次。\r\n其中有" + pass.ToString() + "次测试通过，有" +
                 nopass.ToString() + "次测试未能通过。", 1);
-            SaveResult(result, "test");
+            SaveResult(result, textBoxresult.Text);
             //结束
             isConnectTCP = false;
-            testThread.Abort();
             tcpClient.Disconnect();
-            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = false; }));
-            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
-            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
-            this.Invoke(new Action(() => { timerTest.Stop(); }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = true; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.Enabled = true; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.Enabled = true; }));
+            this.Invoke(new Action(() =>
+            {
+                timerTest.Stop();
+                bindingTest.ResetBindings(false);
+            }));
             timer = 0;
         }
 
         public void CircleTest(object tc)
         {
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = false; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.Enabled = false; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.Enabled = false; }));
             Thread.Sleep(500);
             AddInfo("测试开始！", 1);
-            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = true; }));
-            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = true; }));
-            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = true; }));
             this.Invoke(new Action(() => { timerTest.Start(); }));
             int num = 0;
             pass = 0;
@@ -688,6 +707,11 @@ namespace PLC_Test
             result = GetResultDataTable(result, (tc as ThreadClass).epoch);
             foreach (TestModel tm in (tc as ThreadClass).tms)
             {
+                //退出检测
+                if (isStopTest)
+                {
+                    break;
+                }
                 //读取每一个测试的数据
                 int time = tm.settime;
                 int PLCid = tm.PLCindex;
@@ -699,8 +723,13 @@ namespace PLC_Test
                 //进行测试
                 try
                 {
-                    num++;
                     Thread.Sleep((tm.settime - timer) * 1000);
+                    //退出检测
+                    if (isStopTest)
+                    {
+                       break;
+                    }
+                    num++;
                     AddInfo("第" + timer + "秒，开始第" + num.ToString() + "项" + tm.testtype + "测试：", 1);
                     for (int i = 0; i < (tc as ThreadClass).epoch; i++)
                     {
@@ -710,10 +739,11 @@ namespace PLC_Test
                         {
                             Test_Clockwise(plc, obj, tm, i, num);
                         }
-                        else if (tm.testtype == "负循环")
+                        else if (tm.testtype == "负循环"| tm.testtype == "逆循环")
                         {
                             Test_AntiClockwise(plc, obj, tm, i, num);
                         }
+                        Thread.Sleep(1);
                     }
                 }
                 catch (Exception ex)
@@ -724,15 +754,18 @@ namespace PLC_Test
             AddInfo("共进行" + num.ToString() + "项测试，每项测试" + textBoxepoch.Text + "次，共测试" + 
                 (num * Convert.ToInt32(textBoxepoch.Text)).ToString() + "次。\r\n其中有" + pass.ToString() + "次测试通过，有" +
                 nopass.ToString() + "次测试未能通过。", 1);
-            SaveResult(result, "test");
+            SaveResult(result, textBoxresult.Text);
             //结束
             isConnectTCP = false;
-            testThread.Abort();
             tcpClient.Disconnect();
-            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.ReadOnly = false; }));
-            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.ReadOnly = false; }));
-            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.ReadOnly = false; }));
-            this.Invoke(new Action(() => { timerTest.Stop(); }));
+            dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = true; }));
+            dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.Enabled = true; }));
+            dataGridObject.BeginInvoke(new Action(() => { dataGridObject.Enabled = true; }));
+            this.Invoke(new Action(() =>
+            {
+                timerTest.Stop();
+                bindingTest.ResetBindings(false);
+            }));
             timer = 0;
         }
 
@@ -808,11 +841,13 @@ namespace PLC_Test
                     short valueoff = 0;
                     if (value == 1)
                     {
-                        tcpClient.Send(0x05, add, valueon);
+                        byte[] temp = tcpClient.Send(0x05, add, valueon);
+                        sendbytes += temp.Length;
                     }
                     else if (value == 0)
                     {
-                        tcpClient.Send(0x05, add, valueoff);
+                        byte[] temp = tcpClient.Send(0x05, add, valueoff);
+                        sendbytes += temp.Length;
                     }
                     AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
                         "。\r\n", 3);
@@ -821,7 +856,9 @@ namespace PLC_Test
                 {
                     short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                     //发送写的功能码
-                    tcpClient.Send(0x06, add, value);
+                    byte[] temp = tcpClient.Send(0x06, add, value);
+                    sendbytes += temp.Length;
+                   
                     if (valuetype == "整数")
                     {
                         AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
@@ -844,7 +881,8 @@ namespace PLC_Test
                 {
                     float value = BitConverter.ToSingle(tm.value, 0);
                     //发送写的功能码
-                    tcpClient.Send(0x10, add, value);
+                    byte[] temp = tcpClient.Send(0x10, add, value);
+                    sendbytes += temp.Length;
                     AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
                         "。\r\n", 3);
                 }
@@ -855,7 +893,8 @@ namespace PLC_Test
                 if (memtype == "线圈")
                 {
                     short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
-                    tcpClient.Send(0x01, add, Convert.ToInt16(1));
+                    byte[] temp = tcpClient.Send(0x01, add, Convert.ToInt16(1));
+                    sendbytes += temp.Length;
                     Thread.Sleep(1);
                     int returnvalue = ReciMsg(tcpClient, 1);
                     if (returnvalue == -1)
@@ -874,7 +913,8 @@ namespace PLC_Test
                 {
                     short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                     //发送读的功能码
-                    tcpClient.Send(0x03, add, Convert.ToInt16(1));
+                    byte[] temp = tcpClient.Send(0x03, add, Convert.ToInt16(1));
+                    sendbytes += temp.Length;
                     Thread.Sleep(1);
                     int returnvalue = ReciMsg(tcpClient, 1);
                     if (returnvalue == -1)
@@ -910,7 +950,8 @@ namespace PLC_Test
                 {
                     float value = BitConverter.ToSingle(tm.value, 0);
                     //发送读的功能码
-                    tcpClient.Send(0x03, add, Convert.ToInt16(2));
+                    byte[] temp = tcpClient.Send(0x03, add, Convert.ToInt16(2));
+                    sendbytes += temp.Length;
                     Thread.Sleep(1);
                     float returnvalue = ReciMsg(tcpClient);
                     if (returnvalue == -1)
@@ -959,17 +1000,21 @@ namespace PLC_Test
                 short valueoff = 0;
                 if (value == 1)
                 {
-                    objClient.Send(0x05, add, valueon);
+                    byte[] temp2 = objClient.Send(0x05, add, valueon);
+                    sendbytes += temp2.Length;                   
                 }
                 else if (value == 0)
                 {
-                    objClient.Send(0x05, add, valueoff);
+                    byte[] temp3 = objClient.Send(0x05, add, valueoff);
+                    sendbytes += temp3.Length;                  
                 }
                 
                 //发送读的功能码
                 ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
-                tcpClient.Send(0x01, add, Convert.ToInt16(1));
+                byte[] temp4 = tcpClient.Send(0x01, add, Convert.ToInt16(1));
+                sendbytes += temp4.Length;               
                 Thread.Sleep(1);
+                ReciMsg(objClient, true);
                 int returnvalue = ReciMsg(tcpClient, 1);
                 if (returnvalue == -1)
                 {
@@ -997,10 +1042,13 @@ namespace PLC_Test
                 short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                 ConnectTCP(objClient, obj.objectip, obj.objectport);
                 //发送写的功能码
-                objClient.Send(0x06, add, value);
+                byte[] temp = objClient.Send(0x06, add, value);
+                sendbytes += temp.Length;           
                 ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
                 //发送读的功能码
-                tcpClient.Send(0x03, add, Convert.ToInt16(1));
+                byte[] temp2 = tcpClient.Send(0x03, add, Convert.ToInt16(1));
+                sendbytes += temp2.Length;
+            
                 Thread.Sleep(1);
                 int returnvalue = ReciMsg(tcpClient, 1);
                 if (returnvalue == -1)
@@ -1045,10 +1093,12 @@ namespace PLC_Test
                 float value = BitConverter.ToSingle(tm.value, 0);
                 ConnectTCP(objClient, obj.objectip, obj.objectport);
                 //发送写的功能码
-                objClient.Send(0x10, add, value);
+                byte[] temp = objClient.Send(0x10, add, value);
+                sendbytes += temp.Length;            
                 ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
                 //发送读的功能码
-                tcpClient.Send(0x03, add, Convert.ToInt16(2));
+                byte[] temp2 = tcpClient.Send(0x03, add, Convert.ToInt16(2));
+                sendbytes += temp2.Length;           
                 Thread.Sleep(1);
                 float returnvalue = ReciMsg(tcpClient);
                 if (returnvalue == -1)
@@ -1094,17 +1144,20 @@ namespace PLC_Test
                 short valueoff = 0;
                 if (value == 1)
                 {
-                    tcpClient.Send(0x05, add, valueon);
+                    byte[] temp3 = tcpClient.Send(0x05, add, valueon);
+                    sendbytes += temp3.Length;              
                     AddInfo(BitConverter.ToString(tcpClient.GetTCPFrame(0x05, add, valueon)), 1);
                 }
                 else if (value == 0)
                 {
-                    tcpClient.Send(0x05, add, valueoff);
+                    byte[] temp2 = tcpClient.Send(0x05, add, valueoff);
+                    sendbytes += temp2.Length;               
                     AddInfo(BitConverter.ToString(tcpClient.GetTCPFrame(0x05, add, valueoff)), 1);
                 }
                 ConnectTCP(objClient, obj.objectip, obj.objectport);
                 //发送读的功能码
-                objClient.Send(0x01, add, Convert.ToInt16(1));
+                byte[] temp = objClient.Send(0x01, add, Convert.ToInt16(1));
+                sendbytes += temp.Length;       
                 Thread.Sleep(1);
                 int returnvalue = ReciMsg(objClient, 1);
                 if (returnvalue == -1)
@@ -1133,10 +1186,12 @@ namespace PLC_Test
                 short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
                 ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
                 //发送写的功能码
-                tcpClient.Send(0x06, add, value);
+                byte[] temp = tcpClient.Send(0x06, add, value);
+                sendbytes += temp.Length;           
                 ConnectTCP(objClient, obj.objectip, obj.objectport);
                 //发送读的功能码
-                objClient.Send(0x03, add, Convert.ToInt16(1));
+                byte[] temp2 = objClient.Send(0x03, add, Convert.ToInt16(1));
+                sendbytes += temp2.Length;           
                 Thread.Sleep(1);
                 int returnvalue = ReciMsg(objClient, 1);
                 if (returnvalue == -1)
@@ -1180,10 +1235,13 @@ namespace PLC_Test
                 float value = BitConverter.ToSingle(tm.value, 0);
                 ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
                 //发送写的功能码
-                tcpClient.Send(0x10, add, value);
+                byte[] temp = tcpClient.Send(0x10, add, value);
+                sendbytes += temp.Length;              
                 ConnectTCP(objClient, obj.objectip, obj.objectport);
                 //发送读的功能码
-                objClient.Send(0x03, add, Convert.ToInt16(2));
+                byte[] temp2 = objClient.Send(0x03, add, Convert.ToInt16(2));
+                sendbytes += temp2.Length;
+             
                 Thread.Sleep(1);
                 float returnvalue = ReciMsg(objClient);
                 if (returnvalue == -1)
@@ -1251,6 +1309,7 @@ namespace PLC_Test
         {
             //窗口载入后载入默认配置
             LoadDefualtConfig(defualtTest, defualtPLC, defualtObject);
+            timerBytes.Start();
         }
 
         private void rBsingle_CheckedChanged(object sender, EventArgs e)
@@ -1291,6 +1350,13 @@ namespace PLC_Test
                 Process.GetCurrentProcess().Kill();
                 Application.Exit();
             }
+        }
+
+        private void timerBytes_Tick(object sender, EventArgs e)
+        {
+            timerBytes.Interval = 250;
+            textBoxsendbytes.Text = sendbytes.ToString();
+            textBoxreceivebytes.Text = receivebytes.ToString();
         }
     }
 }
