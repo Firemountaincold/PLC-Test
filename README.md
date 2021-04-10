@@ -4,6 +4,7 @@ PLC测试工具
 用xml作配置文件，用excel作测试流程。  
 用modbus协议作通讯。
 ## 窗口：
+### 1.7：
 ![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image.png)
 ## 更新文档：
 ### 2021.3.31：
@@ -27,6 +28,8 @@ PLC测试工具
 ### 2021.4.9：
 #### 1.6：
 窗口进行了一些调整，新增了一些控件。
-
+### 2021.4.10：
+#### 1.7：
+稳定版本。
 
 
