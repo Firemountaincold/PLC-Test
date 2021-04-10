@@ -1429,10 +1429,10 @@ namespace PLC_Test
             //鼠标悬停说明文字
             ToolTip toolTip = new ToolTip();
             toolTip.AutoPopDelay = 5000;
-            toolTip.InitialDelay = 100;
-            toolTip.ReshowDelay = 500;
+            toolTip.InitialDelay =2000;
+            toolTip.ReshowDelay = 2000;
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(checkBoxsingleconn, "请确保测试流程中连接的是同一PLC或对象。");
+            toolTip.SetToolTip(buttonrestart, "本程序由李呤泽开发。");
         }
     }
 }
