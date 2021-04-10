@@ -293,6 +293,7 @@ namespace PLC_Test
 
         private void buttonstarttest_Click(object sender, EventArgs e)
         {
+            //开始测试
             if (textBoxepoch.Text == "")
             {
                 MessageBox.Show("请输入测试次数。");
@@ -325,6 +326,7 @@ namespace PLC_Test
 
         private void buttonendtest_Click(object sender, EventArgs e)
         {
+            //结束测试
             if (!isConnectTCP)
             {
                 MessageBox.Show("请先开始测试！", "警告");
@@ -639,6 +641,7 @@ namespace PLC_Test
 
         public void SingleTest(object tc)
         {
+            //单向测试
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = false; }));
             dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.Enabled = false; }));
             dataGridObject.BeginInvoke(new Action(() => { dataGridObject.Enabled = false; }));
@@ -715,6 +718,7 @@ namespace PLC_Test
 
         public void CircleTest(object tc)
         {
+            //循环测试
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = false; }));
             dataGridPLC.BeginInvoke(new Action(() => { dataGridPLC.Enabled = false; }));
             dataGridObject.BeginInvoke(new Action(() => { dataGridObject.Enabled = false; }));
@@ -813,7 +817,7 @@ namespace PLC_Test
             if (isConnectTCP)
             {
                 AddInfo("已连接到PLC：" + textBoxPLCip.Text + "/" + textBoxtestport.Text, 1);
-                textBoxconn.Text = "已连接";
+                textBoxconn.Text = "连接成功";
                 textBoxconn.ForeColor = Color.Green;
             }
             else
@@ -1329,6 +1333,7 @@ namespace PLC_Test
 
         private void rBsingle_CheckedChanged(object sender, EventArgs e)
         {
+            //切换到单向测试
             if (rBsingle.Checked)
             {
                 isSingleTest = true;
@@ -1341,6 +1346,7 @@ namespace PLC_Test
 
         private void rBcircle_CheckedChanged(object sender, EventArgs e)
         {
+            //切换到循环测试
             if (rBcircle.Checked)
             {
                 isSingleTest = false;
@@ -1354,6 +1360,7 @@ namespace PLC_Test
 
         private void buttonrestart_Click(object sender, EventArgs e)
         {
+            //重新启动程序
             if (MessageBox.Show("是否重新启动软件？", "提示", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
                 Process.Start(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -1364,6 +1371,7 @@ namespace PLC_Test
 
         private void buttonexit_Click(object sender, EventArgs e)
         {
+            //退出程序
             if (MessageBox.Show("是否退出？", "提示", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
                 Process.GetCurrentProcess().Kill();
@@ -1373,6 +1381,7 @@ namespace PLC_Test
 
         private void timerBytes_Tick(object sender, EventArgs e)
         {
+            //定时更新接受和发送字节数
             timerBytes.Interval = 250;
             textBoxsendbytes.Text = sendbytes.ToString();
             textBoxreceivebytes.Text = receivebytes.ToString();
@@ -1380,6 +1389,7 @@ namespace PLC_Test
 
         private void checkBoxsingleconn_CheckedChanged(object sender, EventArgs e)
         {
+            //是否是单一的长时间连接
             if (checkBoxsingleconn.Checked)
             {
                 isLongConn = true;
@@ -1392,6 +1402,7 @@ namespace PLC_Test
 
         private void checkBoxsingleconn_MouseHover(object sender, EventArgs e)
         {
+            //鼠标悬停说明文字
             ToolTip toolTip = new ToolTip();
             toolTip.AutoPopDelay = 5000;
             toolTip.InitialDelay = 100;
@@ -1402,7 +1413,26 @@ namespace PLC_Test
 
         private void buttonopenconfig_Click(object sender, EventArgs e)
         {
-            Process.Start("notepad.exe", Application.StartupPath + "\\PLC Test.exe.config");
+            //打开程序配置文件
+            try
+            {
+                Process.Start("notepad.exe", Application.StartupPath + "\\PLC Test.exe.config");
+            }
+            catch(Exception ex)
+            {
+                AddInfo(ex.Message, 2);
+            }
+        }
+
+        private void buttonrestart_MouseHover(object sender, EventArgs e)
+        {
+            //鼠标悬停说明文字
+            ToolTip toolTip = new ToolTip();
+            toolTip.AutoPopDelay = 5000;
+            toolTip.InitialDelay = 100;
+            toolTip.ReshowDelay = 500;
+            toolTip.ShowAlways = true;
+            toolTip.SetToolTip(checkBoxsingleconn, "请确保测试流程中连接的是同一PLC或对象。");
         }
     }
 }

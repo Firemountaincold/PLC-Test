@@ -42,14 +42,13 @@ namespace PLC_Test
             this.objectport = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.objecttype = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.buttonopenconfig = new System.Windows.Forms.Button();
             this.textBoxreceivebytes = new System.Windows.Forms.TextBox();
             this.textBoxsendbytes = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.bloadconfigo = new System.Windows.Forms.Button();
-            this.bsaveconfigo = new System.Windows.Forms.Button();
             this.buttondisconn = new System.Windows.Forms.Button();
             this.textBoxconn = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -60,6 +59,8 @@ namespace PLC_Test
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.bloadconfigo = new System.Windows.Forms.Button();
+            this.bsaveconfigo = new System.Windows.Forms.Button();
             this.bsaveconfig = new System.Windows.Forms.Button();
             this.bloadconfig = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -94,7 +95,6 @@ namespace PLC_Test
             this.timersavelog = new System.Windows.Forms.Timer(this.components);
             this.timerTest = new System.Windows.Forms.Timer(this.components);
             this.timerBytes = new System.Windows.Forms.Timer(this.components);
-            this.buttonopenconfig = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridPLC)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridObject)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -233,6 +233,16 @@ namespace PLC_Test
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "连接";
             // 
+            // buttonopenconfig
+            // 
+            this.buttonopenconfig.Location = new System.Drawing.Point(482, 30);
+            this.buttonopenconfig.Name = "buttonopenconfig";
+            this.buttonopenconfig.Size = new System.Drawing.Size(125, 25);
+            this.buttonopenconfig.TabIndex = 18;
+            this.buttonopenconfig.Text = "编辑默认配置";
+            this.buttonopenconfig.UseVisualStyleBackColor = true;
+            this.buttonopenconfig.Click += new System.EventHandler(this.buttonopenconfig_Click);
+            // 
             // textBoxreceivebytes
             // 
             this.textBoxreceivebytes.BackColor = System.Drawing.SystemColors.Window;
@@ -290,26 +300,6 @@ namespace PLC_Test
             this.label13.Size = new System.Drawing.Size(52, 15);
             this.label13.TabIndex = 16;
             this.label13.Text = "已发送";
-            // 
-            // bloadconfigo
-            // 
-            this.bloadconfigo.Location = new System.Drawing.Point(395, 607);
-            this.bloadconfigo.Name = "bloadconfigo";
-            this.bloadconfigo.Size = new System.Drawing.Size(124, 25);
-            this.bloadconfigo.TabIndex = 15;
-            this.bloadconfigo.Text = "加载对象配置";
-            this.bloadconfigo.UseVisualStyleBackColor = true;
-            this.bloadconfigo.Click += new System.EventHandler(this.bloadconfigo_Click);
-            // 
-            // bsaveconfigo
-            // 
-            this.bsaveconfigo.Location = new System.Drawing.Point(527, 607);
-            this.bsaveconfigo.Name = "bsaveconfigo";
-            this.bsaveconfigo.Size = new System.Drawing.Size(124, 25);
-            this.bsaveconfigo.TabIndex = 14;
-            this.bsaveconfigo.Text = "保存对象配置";
-            this.bsaveconfigo.UseVisualStyleBackColor = true;
-            this.bsaveconfigo.Click += new System.EventHandler(this.bsaveconfigo_Click);
             // 
             // buttondisconn
             // 
@@ -401,6 +391,26 @@ namespace PLC_Test
             this.label3.Size = new System.Drawing.Size(100, 15);
             this.label3.TabIndex = 2;
             this.label3.Text = "测试PLC IP：";
+            // 
+            // bloadconfigo
+            // 
+            this.bloadconfigo.Location = new System.Drawing.Point(395, 607);
+            this.bloadconfigo.Name = "bloadconfigo";
+            this.bloadconfigo.Size = new System.Drawing.Size(124, 25);
+            this.bloadconfigo.TabIndex = 15;
+            this.bloadconfigo.Text = "加载对象配置";
+            this.bloadconfigo.UseVisualStyleBackColor = true;
+            this.bloadconfigo.Click += new System.EventHandler(this.bloadconfigo_Click);
+            // 
+            // bsaveconfigo
+            // 
+            this.bsaveconfigo.Location = new System.Drawing.Point(527, 607);
+            this.bsaveconfigo.Name = "bsaveconfigo";
+            this.bsaveconfigo.Size = new System.Drawing.Size(124, 25);
+            this.bsaveconfigo.TabIndex = 14;
+            this.bsaveconfigo.Text = "保存对象配置";
+            this.bsaveconfigo.UseVisualStyleBackColor = true;
+            this.bsaveconfigo.Click += new System.EventHandler(this.bsaveconfigo_Click);
             // 
             // bsaveconfig
             // 
@@ -513,6 +523,7 @@ namespace PLC_Test
             this.buttonrestart.Text = "重新启动软件";
             this.buttonrestart.UseVisualStyleBackColor = true;
             this.buttonrestart.Click += new System.EventHandler(this.buttonrestart_Click);
+            this.buttonrestart.MouseHover += new System.EventHandler(this.buttonrestart_MouseHover);
             // 
             // buttonexit
             // 
@@ -730,16 +741,6 @@ namespace PLC_Test
             // timerBytes
             // 
             this.timerBytes.Tick += new System.EventHandler(this.timerBytes_Tick);
-            // 
-            // buttonopenconfig
-            // 
-            this.buttonopenconfig.Location = new System.Drawing.Point(482, 30);
-            this.buttonopenconfig.Name = "buttonopenconfig";
-            this.buttonopenconfig.Size = new System.Drawing.Size(125, 25);
-            this.buttonopenconfig.TabIndex = 18;
-            this.buttonopenconfig.Text = "编辑默认配置";
-            this.buttonopenconfig.UseVisualStyleBackColor = true;
-            this.buttonopenconfig.Click += new System.EventHandler(this.buttonopenconfig_Click);
             // 
             // Form1
             // 
