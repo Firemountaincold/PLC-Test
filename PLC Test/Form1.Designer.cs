@@ -41,7 +41,6 @@ namespace PLC_Test
             this.objectip = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.objectport = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.objecttype = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.buttonopenconfig = new System.Windows.Forms.Button();
             this.textBoxreceivebytes = new System.Windows.Forms.TextBox();
             this.textBoxsendbytes = new System.Windows.Forms.TextBox();
@@ -65,7 +64,6 @@ namespace PLC_Test
             this.bloadconfig = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkBoxsingleconn = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.textBoxresult = new System.Windows.Forms.TextBox();
@@ -95,11 +93,27 @@ namespace PLC_Test
             this.timersavelog = new System.Windows.Forms.Timer(this.components);
             this.timerTest = new System.Windows.Forms.Timer(this.components);
             this.timerBytes = new System.Windows.Forms.Timer(this.components);
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPageplc = new System.Windows.Forms.TabPage();
+            this.tabPagefsu = new System.Windows.Forms.TabPage();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPageexcel = new System.Windows.Forms.TabPage();
+            this.buttonopenExcelF = new System.Windows.Forms.Button();
+            this.tabPagedatabase = new System.Windows.Forms.TabPage();
+            this.buttondeleteDB = new System.Windows.Forms.Button();
+            this.buttonopenDB = new System.Windows.Forms.Button();
+            this.textBoxDBstatus = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridPLC)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridObject)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridtest)).BeginInit();
+            this.tabControl1.SuspendLayout();
+            this.tabPageplc.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPageexcel.SuspendLayout();
+            this.tabPagedatabase.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridPLC
@@ -110,12 +124,13 @@ namespace PLC_Test
             this.PLCname,
             this.PLCip,
             this.PLCport});
-            this.dataGridPLC.Location = new System.Drawing.Point(22, 496);
+            this.dataGridPLC.Location = new System.Drawing.Point(19, 527);
+            this.dataGridPLC.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridPLC.Name = "dataGridPLC";
             this.dataGridPLC.RowHeadersVisible = false;
             this.dataGridPLC.RowHeadersWidth = 51;
             this.dataGridPLC.RowTemplate.Height = 27;
-            this.dataGridPLC.Size = new System.Drawing.Size(629, 104);
+            this.dataGridPLC.Size = new System.Drawing.Size(648, 104);
             this.dataGridPLC.TabIndex = 0;
             this.dataGridPLC.TabStop = false;
             // 
@@ -159,12 +174,13 @@ namespace PLC_Test
             this.objectip,
             this.objectport,
             this.objecttype});
-            this.dataGridObject.Location = new System.Drawing.Point(22, 638);
+            this.dataGridObject.Location = new System.Drawing.Point(19, 669);
+            this.dataGridObject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridObject.Name = "dataGridObject";
             this.dataGridObject.RowHeadersVisible = false;
             this.dataGridObject.RowHeadersWidth = 51;
             this.dataGridObject.RowTemplate.Height = 27;
-            this.dataGridObject.Size = new System.Drawing.Size(629, 99);
+            this.dataGridObject.Size = new System.Drawing.Size(648, 99);
             this.dataGridObject.TabIndex = 1;
             this.dataGridObject.TabStop = false;
             // 
@@ -206,36 +222,10 @@ namespace PLC_Test
             this.objecttype.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.objecttype.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.buttonopenconfig);
-            this.groupBox1.Controls.Add(this.textBoxreceivebytes);
-            this.groupBox1.Controls.Add(this.textBoxsendbytes);
-            this.groupBox1.Controls.Add(this.label16);
-            this.groupBox1.Controls.Add(this.label15);
-            this.groupBox1.Controls.Add(this.label14);
-            this.groupBox1.Controls.Add(this.label13);
-            this.groupBox1.Controls.Add(this.buttondisconn);
-            this.groupBox1.Controls.Add(this.textBoxconn);
-            this.groupBox1.Controls.Add(this.label10);
-            this.groupBox1.Controls.Add(this.buttonconn);
-            this.groupBox1.Controls.Add(this.textBoxtestport);
-            this.groupBox1.Controls.Add(this.comboBoxlocalIP);
-            this.groupBox1.Controls.Add(this.textBoxPLCip);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Font = new System.Drawing.Font("宋体", 9F);
-            this.groupBox1.Location = new System.Drawing.Point(22, 13);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(629, 175);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "连接";
-            // 
             // buttonopenconfig
             // 
-            this.buttonopenconfig.Location = new System.Drawing.Point(482, 30);
+            this.buttonopenconfig.Location = new System.Drawing.Point(494, 24);
+            this.buttonopenconfig.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonopenconfig.Name = "buttonopenconfig";
             this.buttonopenconfig.Size = new System.Drawing.Size(125, 25);
             this.buttonopenconfig.TabIndex = 18;
@@ -247,10 +237,11 @@ namespace PLC_Test
             // 
             this.textBoxreceivebytes.BackColor = System.Drawing.SystemColors.Window;
             this.textBoxreceivebytes.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxreceivebytes.Location = new System.Drawing.Point(523, 130);
+            this.textBoxreceivebytes.Location = new System.Drawing.Point(534, 124);
+            this.textBoxreceivebytes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxreceivebytes.Name = "textBoxreceivebytes";
             this.textBoxreceivebytes.ReadOnly = true;
-            this.textBoxreceivebytes.Size = new System.Drawing.Size(50, 18);
+            this.textBoxreceivebytes.Size = new System.Drawing.Size(51, 18);
             this.textBoxreceivebytes.TabIndex = 17;
             this.textBoxreceivebytes.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -258,17 +249,18 @@ namespace PLC_Test
             // 
             this.textBoxsendbytes.BackColor = System.Drawing.SystemColors.Window;
             this.textBoxsendbytes.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxsendbytes.Location = new System.Drawing.Point(523, 95);
+            this.textBoxsendbytes.Location = new System.Drawing.Point(534, 89);
+            this.textBoxsendbytes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxsendbytes.Name = "textBoxsendbytes";
             this.textBoxsendbytes.ReadOnly = true;
-            this.textBoxsendbytes.Size = new System.Drawing.Size(50, 18);
+            this.textBoxsendbytes.Size = new System.Drawing.Size(51, 18);
             this.textBoxsendbytes.TabIndex = 17;
             this.textBoxsendbytes.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(572, 95);
+            this.label16.Location = new System.Drawing.Point(583, 89);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(37, 15);
             this.label16.TabIndex = 16;
@@ -277,7 +269,7 @@ namespace PLC_Test
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(572, 130);
+            this.label15.Location = new System.Drawing.Point(583, 124);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(37, 15);
             this.label15.TabIndex = 16;
@@ -286,7 +278,7 @@ namespace PLC_Test
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(465, 130);
+            this.label14.Location = new System.Drawing.Point(476, 124);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(52, 15);
             this.label14.TabIndex = 16;
@@ -295,7 +287,7 @@ namespace PLC_Test
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(465, 95);
+            this.label13.Location = new System.Drawing.Point(476, 89);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(52, 15);
             this.label13.TabIndex = 16;
@@ -303,7 +295,8 @@ namespace PLC_Test
             // 
             // buttondisconn
             // 
-            this.buttondisconn.Location = new System.Drawing.Point(21, 125);
+            this.buttondisconn.Location = new System.Drawing.Point(32, 119);
+            this.buttondisconn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttondisconn.Name = "buttondisconn";
             this.buttondisconn.Size = new System.Drawing.Size(104, 25);
             this.buttondisconn.TabIndex = 13;
@@ -315,17 +308,18 @@ namespace PLC_Test
             // 
             this.textBoxconn.BackColor = System.Drawing.SystemColors.Window;
             this.textBoxconn.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxconn.Location = new System.Drawing.Point(277, 127);
+            this.textBoxconn.Location = new System.Drawing.Point(288, 122);
+            this.textBoxconn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxconn.Name = "textBoxconn";
             this.textBoxconn.ReadOnly = true;
-            this.textBoxconn.Size = new System.Drawing.Size(86, 18);
+            this.textBoxconn.Size = new System.Drawing.Size(85, 18);
             this.textBoxconn.TabIndex = 12;
             this.textBoxconn.Text = "未连接";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(159, 127);
+            this.label10.Location = new System.Drawing.Point(170, 122);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(112, 15);
             this.label10.TabIndex = 11;
@@ -333,7 +327,8 @@ namespace PLC_Test
             // 
             // buttonconn
             // 
-            this.buttonconn.Location = new System.Drawing.Point(21, 81);
+            this.buttonconn.Location = new System.Drawing.Point(32, 75);
+            this.buttonconn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonconn.Name = "buttonconn";
             this.buttonconn.Size = new System.Drawing.Size(104, 25);
             this.buttonconn.TabIndex = 10;
@@ -343,7 +338,8 @@ namespace PLC_Test
             // 
             // textBoxtestport
             // 
-            this.textBoxtestport.Location = new System.Drawing.Point(387, 29);
+            this.textBoxtestport.Location = new System.Drawing.Point(398, 23);
+            this.textBoxtestport.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxtestport.Name = "textBoxtestport";
             this.textBoxtestport.Size = new System.Drawing.Size(67, 25);
             this.textBoxtestport.TabIndex = 9;
@@ -352,23 +348,25 @@ namespace PLC_Test
             // 
             this.comboBoxlocalIP.Font = new System.Drawing.Font("宋体", 9F);
             this.comboBoxlocalIP.FormattingEnabled = true;
-            this.comboBoxlocalIP.Location = new System.Drawing.Point(233, 80);
+            this.comboBoxlocalIP.Location = new System.Drawing.Point(244, 74);
+            this.comboBoxlocalIP.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBoxlocalIP.Name = "comboBoxlocalIP";
-            this.comboBoxlocalIP.Size = new System.Drawing.Size(158, 23);
+            this.comboBoxlocalIP.Size = new System.Drawing.Size(159, 23);
             this.comboBoxlocalIP.TabIndex = 8;
             // 
             // textBoxPLCip
             // 
             this.textBoxPLCip.Font = new System.Drawing.Font("宋体", 9F);
-            this.textBoxPLCip.Location = new System.Drawing.Point(109, 29);
+            this.textBoxPLCip.Location = new System.Drawing.Point(124, 24);
+            this.textBoxPLCip.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxPLCip.Name = "textBoxPLCip";
-            this.textBoxPLCip.Size = new System.Drawing.Size(158, 25);
+            this.textBoxPLCip.Size = new System.Drawing.Size(159, 25);
             this.textBoxPLCip.TabIndex = 6;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(295, 36);
+            this.label6.Location = new System.Drawing.Point(306, 30);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(82, 15);
             this.label6.TabIndex = 5;
@@ -377,7 +375,7 @@ namespace PLC_Test
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(159, 85);
+            this.label5.Location = new System.Drawing.Point(170, 79);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 15);
             this.label5.TabIndex = 4;
@@ -386,7 +384,7 @@ namespace PLC_Test
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 36);
+            this.label3.Location = new System.Drawing.Point(20, 30);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(100, 15);
             this.label3.TabIndex = 2;
@@ -394,7 +392,8 @@ namespace PLC_Test
             // 
             // bloadconfigo
             // 
-            this.bloadconfigo.Location = new System.Drawing.Point(395, 607);
+            this.bloadconfigo.Location = new System.Drawing.Point(409, 639);
+            this.bloadconfigo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.bloadconfigo.Name = "bloadconfigo";
             this.bloadconfigo.Size = new System.Drawing.Size(124, 25);
             this.bloadconfigo.TabIndex = 15;
@@ -404,7 +403,8 @@ namespace PLC_Test
             // 
             // bsaveconfigo
             // 
-            this.bsaveconfigo.Location = new System.Drawing.Point(527, 607);
+            this.bsaveconfigo.Location = new System.Drawing.Point(543, 639);
+            this.bsaveconfigo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.bsaveconfigo.Name = "bsaveconfigo";
             this.bsaveconfigo.Size = new System.Drawing.Size(124, 25);
             this.bsaveconfigo.TabIndex = 14;
@@ -414,7 +414,8 @@ namespace PLC_Test
             // 
             // bsaveconfig
             // 
-            this.bsaveconfig.Location = new System.Drawing.Point(527, 466);
+            this.bsaveconfig.Location = new System.Drawing.Point(543, 497);
+            this.bsaveconfig.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.bsaveconfig.Name = "bsaveconfig";
             this.bsaveconfig.Size = new System.Drawing.Size(124, 25);
             this.bsaveconfig.TabIndex = 1;
@@ -424,7 +425,8 @@ namespace PLC_Test
             // 
             // bloadconfig
             // 
-            this.bloadconfig.Location = new System.Drawing.Point(395, 466);
+            this.bloadconfig.Location = new System.Drawing.Point(409, 497);
+            this.bloadconfig.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.bloadconfig.Name = "bloadconfig";
             this.bloadconfig.Size = new System.Drawing.Size(124, 25);
             this.bloadconfig.TabIndex = 0;
@@ -435,7 +437,7 @@ namespace PLC_Test
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(19, 471);
+            this.label1.Location = new System.Drawing.Point(13, 502);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(61, 15);
             this.label1.TabIndex = 3;
@@ -444,42 +446,19 @@ namespace PLC_Test
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(19, 614);
+            this.label2.Location = new System.Drawing.Point(13, 645);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(67, 15);
             this.label2.TabIndex = 4;
             this.label2.Text = "对象列表";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.checkBoxsingleconn);
-            this.groupBox2.Controls.Add(this.label12);
-            this.groupBox2.Controls.Add(this.textBoxresult);
-            this.groupBox2.Controls.Add(this.label11);
-            this.groupBox2.Controls.Add(this.buttonrestart);
-            this.groupBox2.Controls.Add(this.buttonexit);
-            this.groupBox2.Controls.Add(this.rBcircle);
-            this.groupBox2.Controls.Add(this.rBsingle);
-            this.groupBox2.Controls.Add(this.buttonendtest);
-            this.groupBox2.Controls.Add(this.buttonstarttest);
-            this.groupBox2.Controls.Add(this.textBoxepoch);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.buttonloadtest);
-            this.groupBox2.Cursor = System.Windows.Forms.Cursors.Default;
-            this.groupBox2.Font = new System.Drawing.Font("宋体", 9F);
-            this.groupBox2.Location = new System.Drawing.Point(673, 13);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(629, 175);
-            this.groupBox2.TabIndex = 6;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "自动测试";
             // 
             // checkBoxsingleconn
             // 
             this.checkBoxsingleconn.AutoSize = true;
             this.checkBoxsingleconn.Checked = true;
             this.checkBoxsingleconn.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxsingleconn.Location = new System.Drawing.Point(191, 81);
+            this.checkBoxsingleconn.Location = new System.Drawing.Point(224, 38);
+            this.checkBoxsingleconn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxsingleconn.Name = "checkBoxsingleconn";
             this.checkBoxsingleconn.Size = new System.Drawing.Size(89, 19);
             this.checkBoxsingleconn.TabIndex = 20;
@@ -491,7 +470,7 @@ namespace PLC_Test
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(472, 39);
+            this.label12.Location = new System.Drawing.Point(243, 16);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(47, 15);
             this.label12.TabIndex = 19;
@@ -499,16 +478,17 @@ namespace PLC_Test
             // 
             // textBoxresult
             // 
-            this.textBoxresult.Location = new System.Drawing.Point(383, 33);
+            this.textBoxresult.Location = new System.Drawing.Point(154, 11);
+            this.textBoxresult.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxresult.Name = "textBoxresult";
-            this.textBoxresult.Size = new System.Drawing.Size(86, 25);
+            this.textBoxresult.Size = new System.Drawing.Size(87, 25);
             this.textBoxresult.TabIndex = 18;
             this.textBoxresult.Text = "test";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(248, 39);
+            this.label11.Location = new System.Drawing.Point(19, 16);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(127, 15);
             this.label11.TabIndex = 17;
@@ -516,7 +496,8 @@ namespace PLC_Test
             // 
             // buttonrestart
             // 
-            this.buttonrestart.Location = new System.Drawing.Point(322, 123);
+            this.buttonrestart.Location = new System.Drawing.Point(355, 78);
+            this.buttonrestart.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonrestart.Name = "buttonrestart";
             this.buttonrestart.Size = new System.Drawing.Size(124, 25);
             this.buttonrestart.TabIndex = 16;
@@ -527,7 +508,8 @@ namespace PLC_Test
             // 
             // buttonexit
             // 
-            this.buttonexit.Location = new System.Drawing.Point(478, 123);
+            this.buttonexit.Location = new System.Drawing.Point(511, 78);
+            this.buttonexit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonexit.Name = "buttonexit";
             this.buttonexit.Size = new System.Drawing.Size(124, 25);
             this.buttonexit.TabIndex = 16;
@@ -538,7 +520,8 @@ namespace PLC_Test
             // rBcircle
             // 
             this.rBcircle.AutoSize = true;
-            this.rBcircle.Location = new System.Drawing.Point(150, 127);
+            this.rBcircle.Location = new System.Drawing.Point(141, 81);
+            this.rBcircle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rBcircle.Name = "rBcircle";
             this.rBcircle.Size = new System.Drawing.Size(88, 19);
             this.rBcircle.TabIndex = 14;
@@ -550,7 +533,8 @@ namespace PLC_Test
             // 
             this.rBsingle.AutoSize = true;
             this.rBsingle.Checked = true;
-            this.rBsingle.Location = new System.Drawing.Point(30, 127);
+            this.rBsingle.Location = new System.Drawing.Point(21, 81);
+            this.rBsingle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.rBsingle.Name = "rBsingle";
             this.rBsingle.Size = new System.Drawing.Size(88, 19);
             this.rBsingle.TabIndex = 14;
@@ -561,7 +545,8 @@ namespace PLC_Test
             // 
             // buttonendtest
             // 
-            this.buttonendtest.Location = new System.Drawing.Point(478, 77);
+            this.buttonendtest.Location = new System.Drawing.Point(511, 32);
+            this.buttonendtest.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonendtest.Name = "buttonendtest";
             this.buttonendtest.Size = new System.Drawing.Size(124, 25);
             this.buttonendtest.TabIndex = 12;
@@ -571,7 +556,8 @@ namespace PLC_Test
             // 
             // buttonstarttest
             // 
-            this.buttonstarttest.Location = new System.Drawing.Point(322, 77);
+            this.buttonstarttest.Location = new System.Drawing.Point(355, 32);
+            this.buttonstarttest.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonstarttest.Name = "buttonstarttest";
             this.buttonstarttest.Size = new System.Drawing.Size(124, 25);
             this.buttonstarttest.TabIndex = 11;
@@ -581,7 +567,8 @@ namespace PLC_Test
             // 
             // textBoxepoch
             // 
-            this.textBoxepoch.Location = new System.Drawing.Point(130, 33);
+            this.textBoxepoch.Location = new System.Drawing.Point(118, 32);
+            this.textBoxepoch.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxepoch.Name = "textBoxepoch";
             this.textBoxepoch.Size = new System.Drawing.Size(67, 25);
             this.textBoxepoch.TabIndex = 10;
@@ -589,7 +576,7 @@ namespace PLC_Test
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(36, 39);
+            this.label7.Location = new System.Drawing.Point(23, 39);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(82, 15);
             this.label7.TabIndex = 1;
@@ -597,7 +584,8 @@ namespace PLC_Test
             // 
             // buttonloadtest
             // 
-            this.buttonloadtest.Location = new System.Drawing.Point(30, 77);
+            this.buttonloadtest.Location = new System.Drawing.Point(1204, 224);
+            this.buttonloadtest.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonloadtest.Name = "buttonloadtest";
             this.buttonloadtest.Size = new System.Drawing.Size(125, 25);
             this.buttonloadtest.TabIndex = 0;
@@ -617,12 +605,13 @@ namespace PLC_Test
             this.valuetype,
             this.value,
             this.testtype});
-            this.dataGridtest.Location = new System.Drawing.Point(22, 222);
+            this.dataGridtest.Location = new System.Drawing.Point(19, 254);
+            this.dataGridtest.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridtest.Name = "dataGridtest";
             this.dataGridtest.RowHeadersVisible = false;
             this.dataGridtest.RowHeadersWidth = 51;
             this.dataGridtest.RowTemplate.Height = 27;
-            this.dataGridtest.Size = new System.Drawing.Size(1280, 238);
+            this.dataGridtest.Size = new System.Drawing.Size(1310, 238);
             this.dataGridtest.TabIndex = 7;
             this.dataGridtest.TabStop = false;
             // 
@@ -693,7 +682,7 @@ namespace PLC_Test
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(19, 198);
+            this.label8.Location = new System.Drawing.Point(13, 231);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(67, 15);
             this.label8.TabIndex = 8;
@@ -702,7 +691,7 @@ namespace PLC_Test
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(670, 472);
+            this.label9.Location = new System.Drawing.Point(681, 502);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(67, 15);
             this.label9.TabIndex = 9;
@@ -711,17 +700,19 @@ namespace PLC_Test
             // textBoxinfo
             // 
             this.textBoxinfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBoxinfo.Location = new System.Drawing.Point(673, 496);
+            this.textBoxinfo.Location = new System.Drawing.Point(681, 527);
+            this.textBoxinfo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxinfo.Name = "textBoxinfo";
             this.textBoxinfo.ReadOnly = true;
-            this.textBoxinfo.Size = new System.Drawing.Size(629, 241);
+            this.textBoxinfo.Size = new System.Drawing.Size(648, 242);
             this.textBoxinfo.TabIndex = 10;
             this.textBoxinfo.Text = "";
             // 
             // checkBoxsavelog
             // 
             this.checkBoxsavelog.AutoSize = true;
-            this.checkBoxsavelog.Location = new System.Drawing.Point(1179, 472);
+            this.checkBoxsavelog.Location = new System.Drawing.Point(1210, 501);
+            this.checkBoxsavelog.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxsavelog.Name = "checkBoxsavelog";
             this.checkBoxsavelog.Size = new System.Drawing.Size(119, 19);
             this.checkBoxsavelog.TabIndex = 11;
@@ -742,41 +733,206 @@ namespace PLC_Test
             // 
             this.timerBytes.Tick += new System.EventHandler(this.timerBytes_Tick);
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPageplc);
+            this.tabControl1.Controls.Add(this.tabPagefsu);
+            this.tabControl1.Location = new System.Drawing.Point(19, 18);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(648, 203);
+            this.tabControl1.TabIndex = 16;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
+            // 
+            // tabPageplc
+            // 
+            this.tabPageplc.Controls.Add(this.buttonopenconfig);
+            this.tabPageplc.Controls.Add(this.label3);
+            this.tabPageplc.Controls.Add(this.textBoxreceivebytes);
+            this.tabPageplc.Controls.Add(this.label5);
+            this.tabPageplc.Controls.Add(this.textBoxsendbytes);
+            this.tabPageplc.Controls.Add(this.label6);
+            this.tabPageplc.Controls.Add(this.label16);
+            this.tabPageplc.Controls.Add(this.textBoxPLCip);
+            this.tabPageplc.Controls.Add(this.label15);
+            this.tabPageplc.Controls.Add(this.comboBoxlocalIP);
+            this.tabPageplc.Controls.Add(this.label14);
+            this.tabPageplc.Controls.Add(this.textBoxtestport);
+            this.tabPageplc.Controls.Add(this.label13);
+            this.tabPageplc.Controls.Add(this.buttonconn);
+            this.tabPageplc.Controls.Add(this.buttondisconn);
+            this.tabPageplc.Controls.Add(this.label10);
+            this.tabPageplc.Controls.Add(this.textBoxconn);
+            this.tabPageplc.Location = new System.Drawing.Point(4, 25);
+            this.tabPageplc.Name = "tabPageplc";
+            this.tabPageplc.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageplc.Size = new System.Drawing.Size(640, 174);
+            this.tabPageplc.TabIndex = 0;
+            this.tabPageplc.Text = "PLC测试(TCP)";
+            this.tabPageplc.UseVisualStyleBackColor = true;
+            // 
+            // tabPagefsu
+            // 
+            this.tabPagefsu.Location = new System.Drawing.Point(4, 25);
+            this.tabPagefsu.Name = "tabPagefsu";
+            this.tabPagefsu.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPagefsu.Size = new System.Drawing.Size(640, 174);
+            this.tabPagefsu.TabIndex = 1;
+            this.tabPagefsu.Text = "FSU测试(UDP)";
+            this.tabPagefsu.UseVisualStyleBackColor = true;
+            // 
+            // tabControl2
+            // 
+            this.tabControl2.Controls.Add(this.tabPageexcel);
+            this.tabControl2.Controls.Add(this.tabPagedatabase);
+            this.tabControl2.Location = new System.Drawing.Point(681, 18);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(648, 73);
+            this.tabControl2.TabIndex = 17;
+            this.tabControl2.SelectedIndexChanged += new System.EventHandler(this.tabControl2_SelectedIndexChanged);
+            // 
+            // tabPageexcel
+            // 
+            this.tabPageexcel.Controls.Add(this.buttonopenExcelF);
+            this.tabPageexcel.Controls.Add(this.label12);
+            this.tabPageexcel.Controls.Add(this.textBoxresult);
+            this.tabPageexcel.Controls.Add(this.label11);
+            this.tabPageexcel.Location = new System.Drawing.Point(4, 25);
+            this.tabPageexcel.Name = "tabPageexcel";
+            this.tabPageexcel.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageexcel.Size = new System.Drawing.Size(640, 44);
+            this.tabPageexcel.TabIndex = 0;
+            this.tabPageexcel.Text = "保存到Excel";
+            this.tabPageexcel.UseVisualStyleBackColor = true;
+            // 
+            // buttonopenExcelF
+            // 
+            this.buttonopenExcelF.Location = new System.Drawing.Point(402, 11);
+            this.buttonopenExcelF.Name = "buttonopenExcelF";
+            this.buttonopenExcelF.Size = new System.Drawing.Size(214, 25);
+            this.buttonopenExcelF.TabIndex = 20;
+            this.buttonopenExcelF.Text = "打开测试结果文件夹";
+            this.buttonopenExcelF.UseVisualStyleBackColor = true;
+            this.buttonopenExcelF.Click += new System.EventHandler(this.buttonopenExcelF_Click);
+            // 
+            // tabPagedatabase
+            // 
+            this.tabPagedatabase.Controls.Add(this.buttondeleteDB);
+            this.tabPagedatabase.Controls.Add(this.buttonopenDB);
+            this.tabPagedatabase.Controls.Add(this.textBoxDBstatus);
+            this.tabPagedatabase.Controls.Add(this.label4);
+            this.tabPagedatabase.Location = new System.Drawing.Point(4, 25);
+            this.tabPagedatabase.Name = "tabPagedatabase";
+            this.tabPagedatabase.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPagedatabase.Size = new System.Drawing.Size(640, 44);
+            this.tabPagedatabase.TabIndex = 1;
+            this.tabPagedatabase.Text = "保存到数据库";
+            this.tabPagedatabase.UseVisualStyleBackColor = true;
+            // 
+            // buttondeleteDB
+            // 
+            this.buttondeleteDB.Location = new System.Drawing.Point(507, 9);
+            this.buttondeleteDB.Name = "buttondeleteDB";
+            this.buttondeleteDB.Size = new System.Drawing.Size(124, 25);
+            this.buttondeleteDB.TabIndex = 2;
+            this.buttondeleteDB.Text = "删除上次结果";
+            this.buttondeleteDB.UseVisualStyleBackColor = true;
+            this.buttondeleteDB.Click += new System.EventHandler(this.buttondeleteDB_Click);
+            // 
+            // buttonopenDB
+            // 
+            this.buttonopenDB.Location = new System.Drawing.Point(351, 9);
+            this.buttonopenDB.Name = "buttonopenDB";
+            this.buttonopenDB.Size = new System.Drawing.Size(124, 25);
+            this.buttonopenDB.TabIndex = 2;
+            this.buttonopenDB.Text = "连接数据库";
+            this.buttonopenDB.UseVisualStyleBackColor = true;
+            this.buttonopenDB.Click += new System.EventHandler(this.buttonopenDB_Click);
+            // 
+            // textBoxDBstatus
+            // 
+            this.textBoxDBstatus.BackColor = System.Drawing.SystemColors.Window;
+            this.textBoxDBstatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxDBstatus.Location = new System.Drawing.Point(127, 16);
+            this.textBoxDBstatus.Name = "textBoxDBstatus";
+            this.textBoxDBstatus.ReadOnly = true;
+            this.textBoxDBstatus.Size = new System.Drawing.Size(218, 18);
+            this.textBoxDBstatus.TabIndex = 1;
+            this.textBoxDBstatus.Text = "未连接";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(19, 16);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(97, 15);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "数据库状态：";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.checkBoxsingleconn);
+            this.groupBox1.Controls.Add(this.textBoxepoch);
+            this.groupBox1.Controls.Add(this.rBcircle);
+            this.groupBox1.Controls.Add(this.rBsingle);
+            this.groupBox1.Controls.Add(this.buttonexit);
+            this.groupBox1.Controls.Add(this.buttonendtest);
+            this.groupBox1.Controls.Add(this.buttonrestart);
+            this.groupBox1.Controls.Add(this.buttonstarttest);
+            this.groupBox1.Location = new System.Drawing.Point(681, 93);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(648, 128);
+            this.groupBox1.TabIndex = 18;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "自动测试";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1324, 750);
+            this.ClientSize = new System.Drawing.Size(1347, 787);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.tabControl2);
+            this.Controls.Add(this.buttonloadtest);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.checkBoxsavelog);
             this.Controls.Add(this.textBoxinfo);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.dataGridtest);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.bsaveconfigo);
             this.Controls.Add(this.bloadconfigo);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.dataGridObject);
             this.Controls.Add(this.dataGridPLC);
             this.Controls.Add(this.bsaveconfig);
             this.Controls.Add(this.bloadconfig);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PLC测试工具";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridPLC)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridObject)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridtest)).EndInit();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPageplc.ResumeLayout(false);
+            this.tabPageplc.PerformLayout();
+            this.tabControl2.ResumeLayout(false);
+            this.tabPageexcel.ResumeLayout(false);
+            this.tabPageexcel.PerformLayout();
+            this.tabPagedatabase.ResumeLayout(false);
+            this.tabPagedatabase.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridtest)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -786,10 +942,8 @@ namespace PLC_Test
 
         private System.Windows.Forms.DataGridView dataGridPLC;
         private System.Windows.Forms.DataGridView dataGridObject;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button bsaveconfig;
         private System.Windows.Forms.Button bloadconfig;
         private System.Windows.Forms.TextBox textBoxtestport;
@@ -848,6 +1002,18 @@ namespace PLC_Test
         private System.Windows.Forms.Timer timerBytes;
         private System.Windows.Forms.CheckBox checkBoxsingleconn;
         private System.Windows.Forms.Button buttonopenconfig;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPageplc;
+        private System.Windows.Forms.TabPage tabPagefsu;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage tabPageexcel;
+        private System.Windows.Forms.TabPage tabPagedatabase;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button buttondeleteDB;
+        private System.Windows.Forms.Button buttonopenDB;
+        private System.Windows.Forms.TextBox textBoxDBstatus;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button buttonopenExcelF;
     }
 }
 

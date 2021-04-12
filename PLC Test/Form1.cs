@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 using System.Xml;
 
 namespace PLC_Test
@@ -22,7 +23,10 @@ namespace PLC_Test
         BindingSource bindingobject = new BindingSource();
         ModbusTCPClient tcpClient = new ModbusTCPClient();
         ModbusTCPClient objClient = new ModbusTCPClient();
+        SQL sQL = new SQL();
         //标志
+        public bool isTCPMode = true;
+        public bool isSaveExcel = true;
         public bool isConnectTCP = false;
         public bool isSingleTest = true;
         public bool isPassTest = false;
@@ -38,11 +42,14 @@ namespace PLC_Test
         public int columnindex = 0;
         public int sendbytes = 0;
         public int receivebytes = 0;
+        public int datatables = 0;
         public DataTable result = new DataTable();
+        public List<string> Tablename = new List<string>();
         //默认配置
-        string defualtPLC = ConfigurationManager.AppSettings["DefaultPLC"];
-        string defualtObject = ConfigurationManager.AppSettings["DefaultObject"];
-        string defualtTest = ConfigurationManager.AppSettings["DefaultTest"];
+        string defaultPLC = ConfigurationManager.AppSettings["DefaultPLC"];
+        string defaultObject = ConfigurationManager.AppSettings["DefaultObject"];
+        string defaultTest = ConfigurationManager.AppSettings["DefaultTest"];
+        string defaultDatabase = ConfigurationManager.AppSettings["DefaultDatabase"];
         public Form1()
         {
             InitializeComponent();
@@ -698,7 +705,14 @@ namespace PLC_Test
             AddInfo("共进行" + num.ToString() + "项测试，每项测试" + textBoxepoch.Text + "次，共测试" +
                 (num * Convert.ToInt32(textBoxepoch.Text)).ToString() + "次。\r\n其中有" + pass.ToString() + "次测试通过，有" +
                 nopass.ToString() + "次测试未能通过。", 1);
-            SaveResult(result, textBoxresult.Text);
+            if (isSaveExcel)
+            {
+                SaveResult(result, textBoxresult.Text);
+            }
+            else
+            {
+                SaveDatabase(result);
+            }
             //结束
             isConnectTCP = false;
             dataGridtest.BeginInvoke(new Action(() => { dataGridtest.Enabled = true; }));
@@ -778,7 +792,14 @@ namespace PLC_Test
             AddInfo("共进行" + num.ToString() + "项测试，每项测试" + textBoxepoch.Text + "次，共测试" + 
                 (num * Convert.ToInt32(textBoxepoch.Text)).ToString() + "次。\r\n其中有" + pass.ToString() + "次测试通过，有" +
                 nopass.ToString() + "次测试未能通过。", 1);
-            SaveResult(result, textBoxresult.Text);
+            if (isSaveExcel)
+            {
+                SaveResult(result, textBoxresult.Text);
+            }
+            else
+            {
+                SaveDatabase(result);
+            }
             //结束
             isConnectTCP = false;
             tcpClient.Disconnect();
@@ -1324,10 +1345,24 @@ namespace PLC_Test
             }
         }
 
+        public void SaveDatabase(DataTable dt)
+        {
+            try
+            {
+                sQL.SaveDatatable(dt, DateTime.Now.ToString());
+                AddInfo("已将测试结果保存到数据库" + sQL.GetName() + "，表名为" + DateTime.Now.ToString() + "。", 1);
+                Tablename.Add(DateTime.Now.ToString());
+            }
+            catch(Exception e)
+            {
+                AddInfo(e.Message, 2);
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             //窗口载入后载入默认配置
-            LoadDefualtConfig(defualtTest, defualtPLC, defualtObject);
+            LoadDefualtConfig(defaultTest, defaultPLC, defaultObject);
             timerBytes.Start();
         }
 
@@ -1433,6 +1468,119 @@ namespace PLC_Test
             toolTip.ReshowDelay = 2000;
             toolTip.ShowAlways = true;
             toolTip.SetToolTip(buttonrestart, "本程序由李呤泽开发。");
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //切换选项卡1
+            if (tabControl1.SelectedTab == tabPageplc)
+            {
+                isTCPMode = true;
+            }
+            else
+            {
+                isTCPMode = false;
+            }
+        }
+
+        private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //切换选项卡2
+            if (tabControl2.SelectedTab == tabPageexcel)
+            {
+                isSaveExcel = true;
+                sQL.Disconnect();
+            }
+            else
+            {
+                isSaveExcel = false;
+                try
+                {
+                    ConnectSQL();
+                    textBoxDBstatus.Text = "已连接到" + sQL.GetName();
+                    textBoxDBstatus.ForeColor = Color.Green;
+                }
+                catch(Exception ex)
+                {
+                    AddInfo(ex.Message, 2);
+                    textBoxDBstatus.Text = "连接失败";
+                    textBoxDBstatus.ForeColor = Color.Red;
+                }
+            }
+        }
+
+        private void buttonopenExcelF_Click(object sender, EventArgs e)
+        {
+            //打开结果文件夹
+            try
+            {
+                Process.Start("explorer.exe", Application.StartupPath + "\\测试结果\\");
+            }
+            catch (Exception ex)
+            {
+                AddInfo(ex.Message, 2);
+            }
+        }
+
+        public SQL ConnectSQL(String str)
+        {
+            sQL = new SQL(str);
+            sQL.ConnectDatabase();
+            return sQL;
+        }
+
+        public SQL ConnectSQL()
+        {
+            sQL = new SQL(defaultDatabase);
+            sQL.ConnectDatabase();
+            return sQL;
+        }
+
+        private void buttonopenDB_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = false;
+            openFileDialog.Filter = "文本文件(*.txt)|*.txt";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string path = openFileDialog.FileName;
+                string str = File.ReadAllText(path);
+                try
+                {
+                    ConnectSQL(str);
+                    textBoxDBstatus.Text = "已连接到" + sQL.GetName();
+                    textBoxDBstatus.ForeColor = Color.Green;
+                }
+                catch (Exception ex)
+                {
+                    AddInfo(ex.Message, 2);
+                    textBoxDBstatus.Text = "连接失败";
+                    textBoxDBstatus.ForeColor = Color.Red;
+                }
+
+            }
+        }
+
+        private void buttondeleteDB_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (Tablename.Count > 0)
+                {
+                    string str = Tablename[Tablename.Count - 1];
+                    sQL.DeleteTable(str);
+                    Tablename.RemoveAt(Tablename.Count - 1);
+                    AddInfo("已从数据库" + sQL.GetName() + "，删除表" + DateTime.Now.ToString() + "。", 1);
+                }
+                else
+                {
+                    MessageBox.Show("程序本次启动还未保存过表格。", "警告");
+                }
+            }
+            catch (Exception ex)
+            {
+                AddInfo(ex.Message, 2);
+            }
         }
     }
 }
