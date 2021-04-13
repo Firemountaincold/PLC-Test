@@ -147,4 +147,24 @@
             this.epoch = epoch;
         }
     }
+
+    public class SQLClass
+    {
+        public string server;
+        public string database;
+        public string username;
+        public string password;
+
+        public SQLClass()
+        {
+
+        }
+        public SQLClass(string server, string database, string username, string password)
+        {
+            this.server = server;
+            this.database = database;
+            this.username = username;
+            this.password = password;
+        }
+    }
 }

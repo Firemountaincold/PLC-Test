@@ -7,7 +7,7 @@ namespace PLC_Test
     {
         string sqlconn;
         SqlConnection mysql;
-
+        public bool isconnect = false;
         public SQL()
         {
 
@@ -23,6 +23,7 @@ namespace PLC_Test
             //连接数据库
             mysql = new SqlConnection(sqlconn);
             mysql.Open();
+            isconnect = true;
         }
 
         public void Disconnect()
@@ -31,6 +32,7 @@ namespace PLC_Test
             if (mysql.State != System.Data.ConnectionState.Closed)
             {
                 mysql.Close();
+                isconnect = false;
             }
         }
 
@@ -65,7 +67,14 @@ namespace PLC_Test
 
         public string GetName()
         {
-            return mysql.Database;
+            if (mysql.State != ConnectionState.Closed)
+            {
+                return mysql.Database;
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }
