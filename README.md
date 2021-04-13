@@ -8,6 +8,8 @@ PLC测试工具
 ## 窗口：
 ### 1.7：
 ![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image.png)
+### 2.1：
+![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image2.png)
 ## 更新文档：
 ### 2021.3.31：
 #### 1.0：
@@ -33,5 +35,12 @@ PLC测试工具
 ### 2021.4.10：
 #### 1.7：
 稳定版本。
+### 2021.4.12：
+#### 2.0：
+加入了将测试结果保存在SQL数据库的功能。
+### 2021.4.13：
+#### 2.1：
+加入了UDP功能，用于测试FSU。
+
 
 
