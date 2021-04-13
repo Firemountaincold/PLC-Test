@@ -280,7 +280,7 @@ namespace Modbus_Client
             //建立UDP Socket
             IPEndPoint localiep = new IPEndPoint(IPAddress.Any, Port);
             udpclient = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            udpclient.Bind(localiep);
+            udpclient.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, RecTimeOut);
         }
 
         public void Disconnect()
@@ -290,51 +290,66 @@ namespace Modbus_Client
             udpclient.Close();
         }
 
-        public byte[] GetUDPFrame(int type, short add, short value,int device=1)
+        public byte[] GetUDPFrame(int type, short add, short value, bool head, int device=1)
         {
             //组装UDP帧
             byte[] pdu = this.GetPDU(type, add, value);
             byte pdulength = Convert.ToByte(pdu.Length + 1);
             byte deviceb = Convert.ToByte(device);
             byte[] udphead = { 0x00, 0x01, 0x00, 0x00, 0x00, pdulength, deviceb };
+            if (!head)
+            {
+                udphead = new byte[1];
+                udphead[0] = deviceb;
+            }
             byte[] udpframe = new byte[pdu.Length + udphead.Length];
             Buffer.BlockCopy(udphead, 0, udpframe, 0, udphead.Length);
             Buffer.BlockCopy(pdu, 0, udpframe, udphead.Length, pdu.Length);
             return udpframe;
         }
 
-        public byte[] GetUDPFrame(int type, short add, ushort value, int device = 1)
+        public byte[] GetUDPFrame(int type, short add, ushort value, bool head, int device = 1)
         {
             //组装UDP帧
             byte[] pdu = this.GetPDU(type, add, value);
             byte pdulength = Convert.ToByte(pdu.Length + 1);
             byte deviceb = Convert.ToByte(device);
             byte[] udphead = { 0x00, 0x01, 0x00, 0x00, 0x00, pdulength, deviceb };
+            if (!head)
+            {
+                udphead = new byte[1];
+                udphead[0] = deviceb;
+            }
             byte[] udpframe = new byte[pdu.Length + udphead.Length];
             Buffer.BlockCopy(udphead, 0, udpframe, 0, udphead.Length);
             Buffer.BlockCopy(pdu, 0, udpframe, udphead.Length, pdu.Length);
             return udpframe;
         }
 
-        public byte[] GetUDPFrame(int type, short add, float value, int device = 1)
+        public byte[] GetUDPFrame(int type, short add, float value, bool head, int device = 1)
         {
             //组装UDP帧
             byte[] pdu = this.GetPDU(type, add, value);
             byte pdulength = Convert.ToByte(pdu.Length + 1);
             byte deviceb = Convert.ToByte(device);
             byte[] udphead = { 0x00, 0x01, 0x00, 0x00, 0x00, pdulength, deviceb };
+            if (!head)
+            {
+                udphead = new byte[1];
+                udphead[0] = deviceb;
+            }
             byte[] udpframe = new byte[pdu.Length + udphead.Length];
             Buffer.BlockCopy(udphead, 0, udpframe, 0, udphead.Length);
             Buffer.BlockCopy(pdu, 0, udpframe, udphead.Length, pdu.Length);
             return udpframe;
         }
 
-        public byte[] Send(int type, short add, short value, IPEndPoint ie, int device=1, bool CRCopen=false)
+        public byte[] Send(int type, short add, short value, bool head, IPEndPoint ie, int device=1, bool CRCopen=false)
         {
             //发送功能码，并返回生成的功能码
             if (CRCopen)
             {
-                byte[] data = GetUDPFrame(type, add, value, device);
+                byte[] data = GetUDPFrame(type, add, value, head, device);
                 byte[] crcdata = new byte[data.Length + 2];
                 string crcs = getCrc16Code(data);
                 data.CopyTo(crcdata, 0);
@@ -345,18 +360,18 @@ namespace Modbus_Client
             }
             else
             {
-                byte[] data = GetUDPFrame(type, add, value, device);
+                byte[] data = GetUDPFrame(type, add, value, head, device);
                 udpclient.SendTo(data, ie);
                 return data;
             }
         }
 
-        public byte[] Send(int type, short add, ushort value, IPEndPoint ie, int device = 1, bool CRCopen = false)
+        public byte[] Send(int type, short add, ushort value, bool head, IPEndPoint ie, int device = 1, bool CRCopen = false)
         {
             //发送功能码，并返回生成的功能码
             if (CRCopen)
             {
-                byte[] data = GetUDPFrame(type, add, value, device);
+                byte[] data = GetUDPFrame(type, add, value, head, device);
                 byte[] crcdata = new byte[data.Length + 2];
                 string crcs = getCrc16Code(data);
                 data.CopyTo(crcdata, 0);
@@ -367,18 +382,18 @@ namespace Modbus_Client
             }
             else
             {
-                byte[] data = GetUDPFrame(type, add, value, device);
+                byte[] data = GetUDPFrame(type, add, value, head, device);
                 udpclient.SendTo(data, ie);
                 return data;
             }
         }
 
-        public byte[] Send(int type, short add, float value, IPEndPoint ie, int device = 1, bool CRCopen = false)
+        public byte[] Send(int type, short add, float value, bool head, IPEndPoint ie, int device = 1, bool CRCopen = false)
         {
             //发送功能码，并返回生成的功能码
             if (CRCopen)
             {
-                byte[] data = GetUDPFrame(type, add, value, device);
+                byte[] data = GetUDPFrame(type, add, value, head, device);
                 byte[] crcdata = new byte[data.Length + 2];
                 string crcs = getCrc16Code(data);
                 data.CopyTo(crcdata, 0);
@@ -389,7 +404,7 @@ namespace Modbus_Client
             }
             else
             {
-                byte[] data = GetUDPFrame(type, add, value, device);
+                byte[] data = GetUDPFrame(type, add, value, head, device);
                 udpclient.SendTo(data, ie);
                 return data;
             }
@@ -404,10 +419,9 @@ namespace Modbus_Client
         public byte[] ReceiveMessage(IPEndPoint remote)
         {
             //接受信息
-            UdpClient udpreceive = new UdpClient(remote);
+            byte[] data = new byte[1024];
             EndPoint remoteEP = (EndPoint)remote;
-            byte[] data = udpreceive.Receive(ref remote);
-            int length = data[5];//读取数据长度
+            int length = udpclient.ReceiveFrom(data, ref remoteEP);//读取数据长度
             Byte[] datashow = new byte[length + 6];//定义所要显示的接收的数据的长度
             for (int i = 0; i < length + 6; i++)//将要显示的数据存放到数组datashow中
             {
@@ -417,7 +431,6 @@ namespace Modbus_Client
                 }
                 datashow[i] = data[i];
             }
-            udpreceive.Close();
             return data;
         }
 
@@ -437,6 +450,47 @@ namespace Modbus_Client
                 crcCode = crcCode.PadLeft(4, '0');
             }
             return crcCode;
+        }
+    }
+
+    public class ModbusUDPClientForFSU : ModbusUDPClient
+    {
+        private const short BaseVDadd = 3916;      // VD区对应的Modbus寄存器地址
+
+        private short GetVDadd(short vd)
+        {
+            //转换为VD区地址
+            return Convert.ToInt16(vd + BaseVDadd);
+        }
+
+        public byte[] SendToFSU(int type, short add, short value, bool head, IPEndPoint ie, bool VD, int device = 1, bool CRCopen = false)
+        {
+            if (VD)
+            {
+                add = GetVDadd(add);
+            }
+            byte[] data = Send(type, add, value, head, ie, device, CRCopen);
+            return data;
+        }
+
+        public byte[] SendToFSU(int type, short add, ushort value, bool head, IPEndPoint ie, bool VD, int device = 1, bool CRCopen = false)
+        {
+            if (VD)
+            {
+                add = GetVDadd(add);
+            }
+            byte[] data = Send(type, add, value, head, ie, device, CRCopen);
+            return data;
+        }
+
+        public byte[] SendToFSU(int type, short add, float value, bool head, IPEndPoint ie, bool VD, int device = 1, bool CRCopen = false)
+        {
+            if (VD)
+            {
+                add = GetVDadd(add);
+            }
+            byte[] data = Send(type, add, value, head, ie, device, CRCopen);
+            return data;
         }
     }
 

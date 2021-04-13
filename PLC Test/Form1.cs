@@ -23,6 +23,7 @@ namespace PLC_Test
         BindingSource bindingobject = new BindingSource();
         ModbusTCPClient tcpClient = new ModbusTCPClient();
         ModbusTCPClient objClient = new ModbusTCPClient();
+        ModbusUDPClientForFSU forFSU = new ModbusUDPClientForFSU();
         SQL sQL = new SQL();
         //标志
         public bool isTCPMode = true;
@@ -32,6 +33,8 @@ namespace PLC_Test
         public bool isPassTest = false;
         public bool isStopTest = false;
         public bool isLongConn = true;
+        public bool head = false;
+        public bool CRCOpen = true;
         //线程
         public Thread receThread;
         public Thread testThread;
@@ -343,7 +346,14 @@ namespace PLC_Test
             {
                 isConnectTCP = false;
                 isStopTest = true;
-                tcpClient.Disconnect();
+                if (isTCPMode)
+                {
+                    tcpClient.Disconnect();
+                }
+                else
+                {
+                    forFSU.Disconnect();
+                }
                 this.Invoke(new Action(() => { timerTest.Stop(); }));
                 timer = 0;
                 AddColorInfo("测试已主动结束。\r\n", Color.Red);
@@ -646,6 +656,86 @@ namespace PLC_Test
             return -1;
         }
 
+        public int ReciMsg(ModbusUDPClientForFSU client, IPEndPoint ie, int num)
+        {
+            //返回收到的回复的值的信息
+            byte[] data = new byte[1024];//定义数据接收数组
+            try
+            {
+                data = client.ReceiveMessage(ie);//接收数据到data数组 
+
+                int length = data[5];//读取数据长度
+                Byte[] datashow = new byte[length + 6];//定义所要显示的接收的数据的长度
+                for (int i = 0; i <= length + 5; i++)//将要显示的数据存放到数组datashow中
+                {
+                    datashow[i] = data[i];
+                }
+                receivebytes += datashow.Length;
+                if (datashow.Length <= 10)
+                {
+                    int value = datashow[datashow.Length - 1];
+                    return value;
+                }
+                else
+                {
+                    int value = datashow[datashow.Length - 2] | datashow[datashow.Length - 1];
+                    return value;
+                }//把数组转换成16进制字符串
+            }
+            catch (Exception e)
+            {
+                AddInfo("连接出现了错误。" + e.TargetSite + e.Source + e.Message, 2);
+            }
+            return -1;
+        }
+
+        public bool ReciMsg(ModbusUDPClientForFSU client, IPEndPoint ie, bool i)
+        {
+            //接受回复是否异常
+            byte[] data = new byte[1024];//定义数据接收数组
+            try
+            {
+                data = client.ReceiveMessage(ie);//接收数据到data数组
+                receivebytes += data[5] + 6;
+
+                int error = data[7];//定义所要显示的接收的数据的长度
+                if (error <= 128)
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                AddInfo("连接出现了错误。" + e.TargetSite + e.Source + e.Message, 2);
+            }
+            return false;
+        }
+
+        public float ReciMsg(ModbusUDPClientForFSU client, IPEndPoint ie)
+        {
+            //接受浮点数
+            byte[] data = new byte[1024];//定义数据接收数组
+            try
+            {
+                data = client.ReceiveMessage(ie);//接收数据到data数组
+
+                int length = data[5];//读取数据长度
+                receivebytes += length + 6;
+                Byte[] datashow = new byte[4];//定义所要显示的接收的数据的长度
+                for (int i = 0; i < 4; i++)//将要显示的数据存放到数组datashow中
+                {
+                    datashow[i] = data[i + 2 + length];
+                }
+                float value = BitConverter.ToSingle(datashow, 0);//把数组转换成16进制字符串
+                return value;
+            }
+            catch (Exception e)
+            {
+                AddInfo("连接出现了错误。" + e.TargetSite + e.Source + e.Message, 2);
+            }
+            return -1;
+        }
+
         public void SingleTest(object tc)
         {
             //单向测试
@@ -659,6 +749,10 @@ namespace PLC_Test
             pass = 0;
             nopass = 0;
             result = GetResultDataTable(result, (tc as ThreadClass).epoch);
+            if (!isTCPMode)
+            {
+                forFSU.Connect();
+            }
             foreach (TestModel tm in (tc as ThreadClass).tms)
             {
                 //退出检测
@@ -669,7 +763,10 @@ namespace PLC_Test
                 //进行测试
                 try
                 {
-                    Thread.Sleep((tm.settime - timer) * 1000);
+                    if (tm.settime - timer > 0)
+                    {
+                        Thread.Sleep((tm.settime - timer) * 1000);
+                    }
                     //退出检测
                     if (isStopTest)
                     {
@@ -683,9 +780,18 @@ namespace PLC_Test
                         PLCModel plc = Function.GetPLCModel((tc as ThreadClass).pms, tm);
                         if (!isLongConn)
                         {
-                            ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
-                            Test_Single(plc, obj, tm, i, num);
-                            tcpClient.Disconnect();
+                            if (isTCPMode)
+                            {
+                                ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
+                                Test_Single(plc, obj, tm, i, num);
+                                tcpClient.Disconnect();
+                            }
+                            else
+                            {
+                                isConnectTCP = true;
+                                IPEndPoint ie = new IPEndPoint(IPAddress.Parse(plc.PLCip), Convert.ToInt32(plc.PLCport));
+                                Test_Single_FSU(plc, obj, tm, i, num, ie);
+                            }
                         }
                         else if (isLongConn)
                         {
@@ -699,8 +805,12 @@ namespace PLC_Test
                 }
                 catch (Exception ex)
                 {
-                    AddInfo(ex.Message, 2);
+                    AddInfo(ex.TargetSite + ex.Source + ex.Message, 2);
                 }
+            }
+            if (!isTCPMode)
+            {
+                forFSU.Disconnect();
             }
             AddInfo("共进行" + num.ToString() + "项测试，每项测试" + textBoxepoch.Text + "次，共测试" +
                 (num * Convert.ToInt32(textBoxepoch.Text)).ToString() + "次。\r\n其中有" + pass.ToString() + "次测试通过，有" +
@@ -761,7 +871,10 @@ namespace PLC_Test
                 //进行测试
                 try
                 {
-                    Thread.Sleep((tm.settime - timer) * 1000);
+                    if (tm.settime - timer > 0)
+                    {
+                        Thread.Sleep((tm.settime - timer) * 1000);
+                    }
                     //退出检测
                     if (isStopTest)
                     {
@@ -999,6 +1112,165 @@ namespace PLC_Test
                     sendbytes += temp.Length;
                     Thread.Sleep(1);
                     float returnvalue = ReciMsg(tcpClient);
+                    if (returnvalue == -1)
+                    {
+                        AddInfo("接受数据失败。", 2);
+                    }
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value.ToString() +
+                           " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+                    if (value == returnvalue)
+                    {
+                        isPassTest = true;
+                    }
+                }
+            }
+            if (isPassTest)
+            {
+                AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试通过。\r\n", Color.Green);
+                result.Rows[num - 1].SetField(columnindex + i, "成功");
+                pass++;
+            }
+            else
+            {
+                AddColorInfo("第" + num.ToString() + "项测试第" + (i + 1).ToString() + "轮测试未能通过。\r\n", Color.Red);
+                result.Rows[num - 1].SetField(columnindex + i, "失败");
+                nopass++;
+            }
+            Thread.Sleep(1);
+        }
+
+        public void Test_Single_FSU(PLCModel plc, ObjectModel obj, TestModel tm, int i, int num, IPEndPoint ie)
+        {
+            //用UDP测试FSU
+            isPassTest = false;
+            string memtype = tm.memtype;
+            string valuetype = tm.valuetype;
+            string testtype = tm.testtype;
+            short add = Convert.ToInt16(tm.memadd.ToString(), 16);
+            if (testtype == "写")
+            {
+                //发送写的功能码
+                if (memtype == "线圈")
+                {
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    //发送写的功能码
+                    ushort valueon = 65280;
+                    short valueoff = 0;
+                    if (value == 1)
+                    {
+                        byte[] temp = forFSU.SendToFSU(0x05, add, valueon, head, ie, false, tm.PLCindex, CRCOpen);
+                        sendbytes += temp.Length;
+                    }
+                    else if (value == 0)
+                    {
+                        byte[] temp = forFSU.SendToFSU(0x05, add, valueoff, head, ie, false, tm.PLCindex, CRCOpen);
+                        sendbytes += temp.Length;
+                    }
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                        "。\r\n", 3);
+                }
+                else if (valuetype != "浮点数")
+                {
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    //发送写的功能码
+                    byte[] temp = forFSU.SendToFSU(0x06, add, value, head, ie, false, tm.PLCindex, CRCOpen);
+                    sendbytes += temp.Length;
+
+                    if (valuetype == "整数")
+                    {
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                            "。\r\n", 3);
+                    }
+                    else if (valuetype == "1位定点小数")
+                    {
+                        float value2 = (float)value / 10;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                            "。\r\n", 3);
+                    }
+                    else if (valuetype == "2位定点小数")
+                    {
+                        float value2 = (float)value / 100;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                            "。\r\n", 3);
+                    }
+                }
+                else if (valuetype == "浮点数")
+                {
+                    float value = BitConverter.ToSingle(tm.value, 0);
+                    //发送写的功能码
+                    byte[] temp = forFSU.SendToFSU(0x10, add, value, head, ie, false, tm.PLCindex, CRCOpen);
+                    sendbytes += temp.Length;
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                        "。\r\n", 3);
+                }
+                isPassTest = ReciMsg(forFSU, ie, true);
+            }
+            else if (testtype == "读")
+            {
+                if (memtype == "线圈")
+                {
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    byte[] temp = forFSU.SendToFSU(0x01, add, Convert.ToInt16(1), head, ie, false, tm.PLCindex, CRCOpen);
+                    sendbytes += temp.Length;
+                    Thread.Sleep(1);
+                    int returnvalue = ReciMsg(forFSU, ie, 1);
+                    if (returnvalue == -1)
+                    {
+                        AddInfo("接受数据失败。", 2);
+                    }
+
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value.ToString() +
+                        " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+                    if (value == returnvalue)
+                    {
+                        isPassTest = true;
+                    }
+                }
+                else if (valuetype != "浮点数")
+                {
+                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    //发送读的功能码
+                    byte[] temp = forFSU.SendToFSU(0x03, add, Convert.ToInt16(1), head, ie, false, tm.PLCindex, CRCOpen);
+                    sendbytes += temp.Length;
+                    Thread.Sleep(1);
+                    int returnvalue = ReciMsg(forFSU, ie, 1);
+                    if (returnvalue == -1)
+                    {
+                        AddInfo("接受数据失败。", 2);
+                    }
+                    if (valuetype == "整数")
+                    {
+
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value.ToString() +
+                            " 。读取到的数据为" + returnvalue.ToString() + "。\r\n", 3);
+                    }
+                    else if (valuetype == "1位定点小数")
+                    {
+                        float returnvalue2 = (float)returnvalue / 10;
+                        float value2 = (float)value / 10;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value2.ToString() +
+                            " 。读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
+                    }
+                    else if (valuetype == "2位定点小数")
+                    {
+                        float returnvalue2 = (float)returnvalue / 100;
+                        float value2 = (float)value / 100;
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：期望读取的数据为" + value2.ToString() +
+                            " 。读取到的数据为" + returnvalue2.ToString() + "。\r\n", 3);
+                    }
+                    if (value == returnvalue)
+                    {
+                        isPassTest = true;
+                    }
+                }
+                else if (valuetype == "浮点数")
+                {
+                    float value = BitConverter.ToSingle(tm.value, 0);
+                    //发送读的功能码
+                    byte[] temp = forFSU.SendToFSU(0x03, add, Convert.ToInt16(2), head, ie, false, tm.PLCindex, CRCOpen);
+                    sendbytes += temp.Length;
+                    Thread.Sleep(1);
+                    float returnvalue = ReciMsg(forFSU, ie);
                     if (returnvalue == -1)
                     {
                         AddInfo("接受数据失败。", 2);
@@ -1470,22 +1742,9 @@ namespace PLC_Test
             toolTip.SetToolTip(buttonrestart, "本程序由李呤泽开发。");
         }
 
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //切换选项卡1
-            if (tabControl1.SelectedTab == tabPageplc)
-            {
-                isTCPMode = true;
-            }
-            else
-            {
-                isTCPMode = false;
-            }
-        }
-
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //切换选项卡2
+            //切换选项卡
             if (tabControl2.SelectedTab == tabPageexcel)
             {
                 isSaveExcel = true;
@@ -1524,6 +1783,7 @@ namespace PLC_Test
 
         public SQL ConnectSQL(String str)
         {
+            //连接数据库
             sQL = new SQL(str);
             sQL.ConnectDatabase();
             return sQL;
@@ -1531,6 +1791,7 @@ namespace PLC_Test
 
         public SQL ConnectSQL()
         {
+            //连接默认数据库
             sQL = new SQL(defaultDatabase);
             sQL.ConnectDatabase();
             return sQL;
@@ -1538,6 +1799,7 @@ namespace PLC_Test
 
         private void buttonopenDB_Click(object sender, EventArgs e)
         {
+            //打开一个含有数据库登录语句的txt文件
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = false;
             openFileDialog.Filter = "文本文件(*.txt)|*.txt";
@@ -1547,6 +1809,7 @@ namespace PLC_Test
                 string str = File.ReadAllText(path);
                 try
                 {
+                    sQL.Disconnect();
                     ConnectSQL(str);
                     textBoxDBstatus.Text = "已连接到" + sQL.GetName();
                     textBoxDBstatus.ForeColor = Color.Green;
@@ -1563,6 +1826,7 @@ namespace PLC_Test
 
         private void buttondeleteDB_Click(object sender, EventArgs e)
         {
+            //删除上一个保存的表
             try
             {
                 if (Tablename.Count > 0)
@@ -1574,12 +1838,49 @@ namespace PLC_Test
                 }
                 else
                 {
-                    MessageBox.Show("程序本次启动还未保存过表格。", "警告");
+                    MessageBox.Show("没有能够删除的表格。", "警告");
                 }
             }
             catch (Exception ex)
             {
                 AddInfo(ex.Message, 2);
+            }
+        }
+
+        private void rBTCPPLC_CheckedChanged(object sender, EventArgs e)
+        {
+            //切换到TCP模式
+            if (isConnectTCP)
+            {
+                MessageBox.Show("正在测试中。", "警告");
+                return;
+            }
+            if (rBTCPPLC.Checked)
+            {
+                isTCPMode = true;
+                rBcircle.Enabled = true;
+                checkBoxsingleconn.Enabled = true;
+                checkBoxsingleconn.Checked = true;
+                isLongConn = true;
+            }
+        }
+
+        private void rBUDPFSU_CheckedChanged(object sender, EventArgs e)
+        {
+            //切换到UDP模式
+            if (isConnectTCP)
+            {
+                MessageBox.Show("正在测试中。", "警告");
+                return;
+            }
+            if (rBUDPFSU.Checked)
+            {
+                isTCPMode = false;
+                rBsingle.Checked = true;
+                rBcircle.Enabled = false;
+                checkBoxsingleconn.Checked = false;
+                checkBoxsingleconn.Enabled = false;
+                isLongConn = false;
             }
         }
     }

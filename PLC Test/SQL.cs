@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Sql;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Data;
 
 namespace PLC_Test
 {
@@ -44,7 +38,7 @@ namespace PLC_Test
         {
             //把Datatable保存到数据库
             string CreateT = "CREATE TABLE [" + tablename + "](";
-            for(int i = 0; i < dt.Columns.Count; i++)
+            for (int i = 0; i < dt.Columns.Count; i++)
             {
                 CreateT += dt.Columns[i].Caption.ToString() + " varchar(100),";
             }
