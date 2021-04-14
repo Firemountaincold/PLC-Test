@@ -33,7 +33,6 @@ namespace PLC_Test
         public bool isPassTest = false;
         public bool isStopTest = false;
         public bool isLongConn = true;
-        public bool head = false;
         public bool CRCOpen = true;
         //线程
         public Thread receThread;
@@ -53,6 +52,7 @@ namespace PLC_Test
         string defaultObject = ConfigurationManager.AppSettings["DefaultObject"];
         string defaultTest = ConfigurationManager.AppSettings["DefaultTest"];
         string defaultDatabase = ConfigurationManager.AppSettings["DefaultDatabase"];
+        public bool head = Convert.ToBoolean(ConfigurationManager.AppSettings["PDUHead"]);
         public Form()
         {
             InitializeComponent();
@@ -100,7 +100,7 @@ namespace PLC_Test
                 bindingobject.DataSource = null;
                 DataTable loadxml2 = XmlToDataTable(xmlstr2);
                 bindingobject.DataSource = loadxml2;
-                AddInfo("已加载Object配置文件。", 1);
+                AddInfo("已加载默认Object配置文件。", 1);
                 bindingobject.ResetBindings(false);
 
                 dataGridPLC.ClearSelection();
@@ -1823,6 +1823,7 @@ namespace PLC_Test
                     config.AppSettings.Settings["DefaultDatabase"].Value = str;
                     config.Save(ConfigurationSaveMode.Modified);
                     ConfigurationManager.RefreshSection("appSettings");
+                    AddInfo("已保存到默认数据库。", 1);
                 }
                 textBoxDBstatus.Text = "正在连接......";
                 textBoxDBstatus.ForeColor = Color.Black;
@@ -1843,7 +1844,7 @@ namespace PLC_Test
                     string str = Tablename[Tablename.Count - 1];
                     sQL.DeleteTable(str);
                     Tablename.RemoveAt(Tablename.Count - 1);
-                    AddInfo("已从数据库" + sQL.GetName() + "，删除表" + DateTime.Now.ToString() + "。", 1);
+                    AddInfo("已从数据库" + sQL.GetName() + "中删除表" + DateTime.Now.ToString() + "。", 1);
                 }
                 else
                 {
