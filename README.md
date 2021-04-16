@@ -9,7 +9,7 @@ PLC测试工具
 ## 窗口：
 ### 1.7：
 ![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image.png)
-### 2.1：
+### 2.2：
 ![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image2.png)
 ## 更新文档：
 ### 2021.3.31：
