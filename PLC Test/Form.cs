@@ -56,6 +56,7 @@ namespace PLC_Test
         public Form()
         {
             InitializeComponent();
+            //数据绑定
             dataGridPLC.DataSource = bindingPLC;
             dataGridPLC.AutoGenerateColumns = false;
             dataGridtest.DataSource = bindingTest;
@@ -1605,18 +1606,25 @@ namespace PLC_Test
         public void SaveResult(DataTable dt, string name)
         {
             //保存结果表格
-            if (!Directory.Exists(Application.StartupPath + "\\测试结果"))
+            try
             {
-                Directory.CreateDirectory(Application.StartupPath + "\\测试结果");
+                if (!Directory.Exists(Application.StartupPath + "\\测试结果"))
+                {
+                    Directory.CreateDirectory(Application.StartupPath + "\\测试结果");
+                }
+                if (File.Exists(Application.StartupPath + "\\测试结果\\" + name + ".xlsx"))
+                {
+                    File.Delete(Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
+                }
+                Function.SaveDataTableinExcel(dt, Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
+                if (MessageBox.Show("已将结果保存在程序目录，是否现在打开？", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Process.Start(Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
+                }
             }
-            if(File.Exists(Application.StartupPath + "\\测试结果\\" + name + ".xlsx"))
+            catch(Exception e)
             {
-                File.Delete(Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
-            }
-            Function.SaveDataTableinExcel(dt, Application.StartupPath + "\\测试结果\\" + name + ".xlsx");
-            if (MessageBox.Show("已将结果保存在程序目录，是否现在打开？", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                Process.Start(Application.StartupPath + "\\测试结果\\" + name + ".xlsx"); 
+                AddInfo(e.Message, 2);
             }
         }
 
@@ -1742,7 +1750,7 @@ namespace PLC_Test
             toolTip.InitialDelay =2000;
             toolTip.ReshowDelay = 2000;
             toolTip.ShowAlways = true;
-            toolTip.SetToolTip(buttonrestart, "本程序由李呤泽开发。");
+            toolTip.SetToolTip(buttonrestart, "本程序由LLZ开发。");
         }
 
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)

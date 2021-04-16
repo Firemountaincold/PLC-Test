@@ -133,7 +133,7 @@ namespace PLC_Test
             this.dataGridPLC.RowHeadersVisible = false;
             this.dataGridPLC.RowHeadersWidth = 51;
             this.dataGridPLC.RowTemplate.Height = 27;
-            this.dataGridPLC.Size = new System.Drawing.Size(648, 104);
+            this.dataGridPLC.Size = new System.Drawing.Size(648, 100);
             this.dataGridPLC.TabIndex = 0;
             this.dataGridPLC.TabStop = false;
             // 
@@ -177,13 +177,13 @@ namespace PLC_Test
             this.objectip,
             this.objectport,
             this.objecttype});
-            this.dataGridObject.Location = new System.Drawing.Point(19, 669);
+            this.dataGridObject.Location = new System.Drawing.Point(19, 668);
             this.dataGridObject.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridObject.Name = "dataGridObject";
             this.dataGridObject.RowHeadersVisible = false;
             this.dataGridObject.RowHeadersWidth = 51;
             this.dataGridObject.RowTemplate.Height = 27;
-            this.dataGridObject.Size = new System.Drawing.Size(648, 99);
+            this.dataGridObject.Size = new System.Drawing.Size(648, 100);
             this.dataGridObject.TabIndex = 1;
             this.dataGridObject.TabStop = false;
             // 
@@ -227,10 +227,10 @@ namespace PLC_Test
             // 
             // buttonopenconfig
             // 
-            this.buttonopenconfig.Location = new System.Drawing.Point(25, 49);
+            this.buttonopenconfig.Location = new System.Drawing.Point(25, 43);
             this.buttonopenconfig.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonopenconfig.Name = "buttonopenconfig";
-            this.buttonopenconfig.Size = new System.Drawing.Size(125, 25);
+            this.buttonopenconfig.Size = new System.Drawing.Size(125, 33);
             this.buttonopenconfig.TabIndex = 18;
             this.buttonopenconfig.Text = "编辑默认配置";
             this.buttonopenconfig.UseVisualStyleBackColor = true;
@@ -395,7 +395,7 @@ namespace PLC_Test
             // 
             // bloadconfigo
             // 
-            this.bloadconfigo.Location = new System.Drawing.Point(409, 639);
+            this.bloadconfigo.Location = new System.Drawing.Point(409, 635);
             this.bloadconfigo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.bloadconfigo.Name = "bloadconfigo";
             this.bloadconfigo.Size = new System.Drawing.Size(124, 25);
@@ -406,7 +406,7 @@ namespace PLC_Test
             // 
             // bsaveconfigo
             // 
-            this.bsaveconfigo.Location = new System.Drawing.Point(543, 639);
+            this.bsaveconfigo.Location = new System.Drawing.Point(543, 635);
             this.bsaveconfigo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.bsaveconfigo.Name = "bsaveconfigo";
             this.bsaveconfigo.Size = new System.Drawing.Size(124, 25);
@@ -449,7 +449,7 @@ namespace PLC_Test
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 645);
+            this.label2.Location = new System.Drawing.Point(13, 640);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(67, 15);
             this.label2.TabIndex = 4;
@@ -587,10 +587,10 @@ namespace PLC_Test
             // 
             // buttonloadtest
             // 
-            this.buttonloadtest.Location = new System.Drawing.Point(1192, 224);
+            this.buttonloadtest.Location = new System.Drawing.Point(1158, 224);
             this.buttonloadtest.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.buttonloadtest.Name = "buttonloadtest";
-            this.buttonloadtest.Size = new System.Drawing.Size(137, 25);
+            this.buttonloadtest.Size = new System.Drawing.Size(171, 25);
             this.buttonloadtest.TabIndex = 0;
             this.buttonloadtest.Text = "加载测试流程";
             this.buttonloadtest.UseVisualStyleBackColor = true;
@@ -763,7 +763,7 @@ namespace PLC_Test
             // 
             // buttonopenExcelF
             // 
-            this.buttonopenExcelF.Location = new System.Drawing.Point(402, 11);
+            this.buttonopenExcelF.Location = new System.Drawing.Point(402, 9);
             this.buttonopenExcelF.Name = "buttonopenExcelF";
             this.buttonopenExcelF.Size = new System.Drawing.Size(214, 25);
             this.buttonopenExcelF.TabIndex = 20;

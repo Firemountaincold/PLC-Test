@@ -13,7 +13,7 @@ namespace Modbus_Client
             //生成PDU，其他形式的继续重载就行
             //可用于功能码0x01,0x02,0x03,0x04,0x05,0x06
             bool isbigendian = false;//windows是小字节序
-            byte[] byteadd = BitConverter.GetBytes(Convert.ToInt16(add + 1));//地址从零开始不用+1
+            byte[] byteadd = BitConverter.GetBytes(Convert.ToInt16(Convert.ToString(add, 16)));//地址从零开始不用+1
             byte[] bytevalue = BitConverter.GetBytes(value);
             if (!isbigendian)//如果是小字节序，需要调换一下位置
             {
@@ -36,7 +36,7 @@ namespace Modbus_Client
             //生成PDU，其他形式的继续重载就行
             //可用于功能码0x01,0x02,0x03,0x04,0x05,0x06
             bool isbigendian = false;//windows是小字节序
-            byte[] byteadd = BitConverter.GetBytes(Convert.ToInt16(add + 1));//地址从零开始不用+1
+            byte[] byteadd = BitConverter.GetBytes(Convert.ToInt16(Convert.ToString(add, 16)));//地址从零开始不用+1
             byte[] bytevalue = BitConverter.GetBytes(value);
             if (!isbigendian)//如果是小字节序，需要调换一下位置
             {
@@ -59,7 +59,7 @@ namespace Modbus_Client
             //生成PDU，其他形式的继续重载就行
             //可用于功能码0x10
             bool isbigendian = false;//windows是小字节序
-            byte[] byteadd = BitConverter.GetBytes(Convert.ToInt16(add + 1));//地址从零开始不用+1
+            byte[] byteadd = BitConverter.GetBytes(Convert.ToInt16(Convert.ToString(add, 16)));//地址从零开始不用+1
             byte[] bytevalue = BitConverter.GetBytes(value);
             byte[] mid = { 0x00, 0x02, 0x04 };
             if (!isbigendian)//如果是小字节序，需要调换一下位置
