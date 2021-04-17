@@ -53,8 +53,19 @@ namespace PLC_Test
         string defaultTest = ConfigurationManager.AppSettings["DefaultTest"];
         string defaultDatabase = ConfigurationManager.AppSettings["DefaultDatabase"];
         public bool head = Convert.ToBoolean(ConfigurationManager.AppSettings["PDUHead"]);
+        public bool isfirstime = Convert.ToBoolean(ConfigurationManager.AppSettings["IsFirstTime"]);
         public Form()
         {
+            //初次启动对话
+            if (isfirstime)
+            {
+                config.AppSettings.Settings["IsFirstTime"].Value = "false";
+                config.Save(ConfigurationSaveMode.Modified);
+                if (MessageBox.Show("检测到您是第一次启动软件，是否先编辑默认配置？", "初次启动提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    OpenConfigAndExit();
+                }
+            }
             InitializeComponent();
             //数据绑定
             dataGridPLC.DataSource = bindingPLC;
@@ -602,7 +613,7 @@ namespace PLC_Test
                 }
                 else
                 {
-                    int value = datashow[datashow.Length - 2] | datashow[datashow.Length - 1];
+                    int value = datashow[datashow.Length - 2] << 8 | datashow[datashow.Length - 1];
                     return value;
                 }//把数组转换成16进制字符串
             }
@@ -682,7 +693,7 @@ namespace PLC_Test
                 }
                 else
                 {
-                    int value = datashow[datashow.Length - 2] | datashow[datashow.Length - 1];
+                    int value = datashow[datashow.Length - 2] << 8 | datashow[datashow.Length - 1];
                     return value;
                 }//把数组转换成16进制字符串
             }
@@ -1011,31 +1022,31 @@ namespace PLC_Test
                         byte[] temp = tcpClient.Send(0x05, add, valueoff);
                         sendbytes += temp.Length;
                     }
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value.ToString() +
                         "。\r\n", 3);
                 }
                 else if (valuetype != "浮点数")
                 {
-                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    short value = Convert.ToInt16(tm.value[1] << 8 | tm.value[0]);
                     //发送写的功能码
                     byte[] temp = tcpClient.Send(0x06, add, value);
                     sendbytes += temp.Length;
                    
                     if (valuetype == "整数")
                     {
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value.ToString() +
                             "。\r\n", 3);
                     }
                     else if (valuetype == "1位定点小数")
                     {
                         float value2 = (float)value / 10;
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value2.ToString() +
                             "。\r\n", 3);
                     }
                     else if (valuetype == "2位定点小数")
                     {
                         float value2 = (float)value / 100;
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value2.ToString() +
                             "。\r\n", 3);
                     }
                 }
@@ -1045,7 +1056,7 @@ namespace PLC_Test
                     //发送写的功能码
                     byte[] temp = tcpClient.Send(0x10, add, value);
                     sendbytes += temp.Length;
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value.ToString() +
                         "。\r\n", 3);
                 }
                 isPassTest = ReciMsg(tcpClient, true);
@@ -1073,7 +1084,7 @@ namespace PLC_Test
                 }
                 else if (valuetype != "浮点数")
                 {
-                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    short value = Convert.ToInt16(tm.value[1] << 8 | tm.value[0]);
                     //发送读的功能码
                     byte[] temp = tcpClient.Send(0x03, add, Convert.ToInt16(1));
                     sendbytes += temp.Length;
@@ -1170,31 +1181,31 @@ namespace PLC_Test
                         byte[] temp = forFSU.SendToFSU(0x05, add, valueoff, head, ie, false, tm.PLCindex, CRCOpen);
                         sendbytes += temp.Length;
                     }
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value.ToString() +
                         "。\r\n", 3);
                 }
                 else if (valuetype != "浮点数")
                 {
-                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    short value = Convert.ToInt16(tm.value[1] << 8 | tm.value[0]);
                     //发送写的功能码
                     byte[] temp = forFSU.SendToFSU(0x06, add, value, head, ie, false, tm.PLCindex, CRCOpen);
                     sendbytes += temp.Length;
 
                     if (valuetype == "整数")
                     {
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value.ToString() +
                             "。\r\n", 3);
                     }
                     else if (valuetype == "1位定点小数")
                     {
                         float value2 = (float)value / 10;
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value2.ToString() +
                             "。\r\n", 3);
                     }
                     else if (valuetype == "2位定点小数")
                     {
                         float value2 = (float)value / 100;
-                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value2.ToString() +
+                        AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value2.ToString() +
                             "。\r\n", 3);
                     }
                 }
@@ -1204,7 +1215,7 @@ namespace PLC_Test
                     //发送写的功能码
                     byte[] temp = forFSU.SendToFSU(0x10, add, value, head, ie, false, tm.PLCindex, CRCOpen);
                     sendbytes += temp.Length;
-                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + add.ToString() + " 的寄存器写为" + value.ToString() +
+                    AddInfo("第" + (i + 1).ToString() + "轮测试：将地址 " + Convert.ToString(add, 16) + " 的寄存器写为" + value.ToString() +
                         "。\r\n", 3);
                 }
                 isPassTest = ReciMsg(forFSU, ie, true);
@@ -1232,7 +1243,7 @@ namespace PLC_Test
                 }
                 else if (valuetype != "浮点数")
                 {
-                    short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                    short value = Convert.ToInt16(tm.value[1] << 8 | tm.value[0]);
                     //发送读的功能码
                     byte[] temp = forFSU.SendToFSU(0x03, add, Convert.ToInt16(1), head, ie, false, tm.PLCindex, CRCOpen);
                     sendbytes += temp.Length;
@@ -1355,7 +1366,7 @@ namespace PLC_Test
             }
             else if (tm.valuetype != "浮点数")
             {
-                short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                short value = Convert.ToInt16(tm.value[1] << 8 | tm.value[0]);
                 ConnectTCP(objClient, obj.objectip, obj.objectport);
                 //发送写的功能码
                 byte[] temp = objClient.Send(0x06, add, value);
@@ -1499,7 +1510,7 @@ namespace PLC_Test
             }
             else if (tm.valuetype != "浮点数")
             {
-                short value = Convert.ToInt16(tm.value[1] | tm.value[0]);
+                short value = Convert.ToInt16(tm.value[1] << 8 | tm.value[0]);
                 ConnectTCP(tcpClient, plc.PLCip, plc.PLCport);
                 //发送写的功能码
                 byte[] temp = tcpClient.Send(0x06, add, value);
@@ -1900,6 +1911,14 @@ namespace PLC_Test
                 checkBoxsingleconn.Enabled = false;
                 isLongConn = false;
             }
+        }
+
+        public void OpenConfigAndExit()
+        {
+            Process.Start("notepad.exe", Application.StartupPath + "\\PLC Test.exe.config");
+            Thread.Sleep(10);
+            Process.GetCurrentProcess().Kill();
+            Application.Exit();
         }
     }
 }
