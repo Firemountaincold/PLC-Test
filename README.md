@@ -5,11 +5,11 @@ PLC测试工具
 用modbus协议作通讯。
 ## 下载：
 [1.7稳定版](https://github.com/Firemountaincold/PLC-Test/blob/main/PLC%20Test%201.7.rar)  
-[2.2稳定版](https://github.com/Firemountaincold/PLC-Test/blob/main/PLC%20Test%202.2.rar)
+[2.3稳定版](https://github.com/Firemountaincold/PLC-Test/blob/main/PLC%20Test%202.3.rar)
 ## 窗口：
 ### 1.7：
 ![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image.png)
-### 2.2：
+### 2.3：
 ![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image2.png)
 ## 更新文档：
 ### 2021.3.31：
@@ -46,6 +46,11 @@ PLC测试工具
 现在用对话框来登录新的数据库。  
 调节了一些窗口UI。  
 修正了寄存器地址进制转换的bug。
+### 2021.4.17：
+#### 2.3：
+添加了首次启动询问是否打开配置文件的功能。   
+修正了关于定点小数和文本显示的bug。
+
 
 
 
