@@ -4,8 +4,7 @@ PLC测试工具
 用xml作配置文件，用excel作测试流程。  
 用modbus协议作通讯。
 ## 下载：
-[1.7稳定版](https://github.com/Firemountaincold/PLC-Test/blob/main/PLC%20Test%201.7.rar)  
-[2.3稳定版](https://github.com/Firemountaincold/PLC-Test/blob/main/PLC%20Test%202.3.rar)
+[2.3发行版](https://github.com/Firemountaincold/PLC-Test/blob/main/PLC%20Test%202.3.rar)
 ## 窗口：
 ### 1.7：
 ![image](https://github.com/Firemountaincold/PLC-Test/blob/main/Image.png)
