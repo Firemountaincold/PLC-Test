@@ -592,7 +592,7 @@ namespace PLC_Test
             this.buttonloadtest.Name = "buttonloadtest";
             this.buttonloadtest.Size = new System.Drawing.Size(171, 25);
             this.buttonloadtest.TabIndex = 0;
-            this.buttonloadtest.Text = "加载测试流程";
+            this.buttonloadtest.Text = "加载测试脚本";
             this.buttonloadtest.UseVisualStyleBackColor = true;
             this.buttonloadtest.Click += new System.EventHandler(this.buttonloadtest_Click);
             // 
@@ -894,9 +894,9 @@ namespace PLC_Test
             this.rBUDPFSU.AutoSize = true;
             this.rBUDPFSU.Location = new System.Drawing.Point(260, 25);
             this.rBUDPFSU.Name = "rBUDPFSU";
-            this.rBUDPFSU.Size = new System.Drawing.Size(136, 19);
+            this.rBUDPFSU.Size = new System.Drawing.Size(108, 19);
             this.rBUDPFSU.TabIndex = 1;
-            this.rBUDPFSU.Text = "FSU测试（UDP）";
+            this.rBUDPFSU.Text = "Modbus/UDP";
             this.rBUDPFSU.UseVisualStyleBackColor = true;
             this.rBUDPFSU.CheckedChanged += new System.EventHandler(this.rBUDPFSU_CheckedChanged);
             // 
@@ -906,10 +906,10 @@ namespace PLC_Test
             this.rBTCPPLC.Checked = true;
             this.rBTCPPLC.Location = new System.Drawing.Point(45, 25);
             this.rBTCPPLC.Name = "rBTCPPLC";
-            this.rBTCPPLC.Size = new System.Drawing.Size(136, 19);
+            this.rBTCPPLC.Size = new System.Drawing.Size(108, 19);
             this.rBTCPPLC.TabIndex = 0;
             this.rBTCPPLC.TabStop = true;
-            this.rBTCPPLC.Text = "PLC测试（TCP）";
+            this.rBTCPPLC.Text = "Modbus/TCP";
             this.rBTCPPLC.UseVisualStyleBackColor = true;
             this.rBTCPPLC.CheckedChanged += new System.EventHandler(this.rBTCPPLC_CheckedChanged);
             // 
@@ -944,7 +944,7 @@ namespace PLC_Test
             this.MaximizeBox = false;
             this.Name = "Form";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "PLC测试工具";
+            this.Text = "PLC组态文件交互测试工具";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridPLC)).EndInit();
